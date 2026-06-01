@@ -3,26 +3,25 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
 }
 
-// NextAuth models
 model Account {
   id                String  @id @default(cuid())
   userId            String
   type              String
   provider          String
   providerAccountId String
-  refresh_token     String? @db.Text
-  access_token      String? @db.Text
+  refresh_token     String?
+  access_token      String?
   expires_at        Int?
   token_type        String?
   scope             String?
-  id_token          String? @db.Text
+  id_token          String?
   session_state     String?
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([provider, providerAccountId])
 }
@@ -43,7 +42,359 @@ model VerificationToken {
   @@unique([identifier, token])
 }
 
-// ERP Models
+model CompanyConfig {
+  id                   String   @id @default(cuid())
+  // Datos básicos
+  name                 String
+  ruc                  String
+  // Contacto
+  phone                String?
+  mobile               String?
+  email                String?
+  website              String?
+  // Ubicación
+  address              String?
+  city                 String?
+  department           String?
+  // Representación legal
+  legalRepresentative  String?
+  legalRepresentativeCI String?
+  // Datos bancarios
+  bankName             String?
+  bankAccount          String?
+  bankAccountType      String?
+  // Datos fiscales (Paraguay)
+  timbrado             String?
+  establishmentNumber  String?
+  dispatchPoint        String?
+  // Documentos
+  logoUrl              String?
+  footerText           String?
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+}
+
+model User {
+  id                  String               @id @default(cuid())
+  name                String?
+  email               String?              @unique
+  emailVerified       DateTime?
+  image               String?
+  password            String?
+  role                Role                 @default(VENDEDOR)
+  phone               String?
+  commissionRate      Float                @default(0)
+  isActive            Boolean              @default(true)
+  createdAt           DateTime             @default(now())
+  updatedAt           DateTime             @updatedAt
+  accounts            Account[]
+  commissionsPaid     Commission[]         @relation("PaidBy")
+  commissions         Commission[]         @relation("CommissionRecipient")
+  updatedSettings     CommissionSettings[] @relation("UpdatedBy")
+  registeredCustomers Customer[]           @relation("RegisteredBy")
+  payments            Payment[]            @relation("ReceivedBy")
+  purchases           Purchase[]           @relation("Buyer")
+  sales               Sale[]               @relation("Seller")
+  sessions            Session[]
+  movements           StockMovement[]
+  supplierPayments    SupplierPayment[]    @relation("PaidByToSupplier")
+  cashesOpened        CashRegister[]       @relation("CashOpener")
+  cashesClosed        CashRegister[]       @relation("CashCloser")
+  cashWithdrawals     CashWithdrawal[]     @relation("CashWithdrawer")
+  cashCounts          CashCount[]          @relation("CashCounter")
+}
+
+model Supplier {
+  id           String            @id @default(cuid())
+  code         String            @unique
+  name         String
+  ruc          String?
+  contactName  String?
+  phone        String?
+  email        String?
+  categories   String?
+  paymentTerms String?
+  notes        String?
+  createdAt    DateTime          @default(now())
+  updatedAt    DateTime          @updatedAt
+  products     Product[]
+  purchases    Purchase[]
+  payments     SupplierPayment[]
+}
+
+model Product {
+  id            String          @id @default(cuid())
+  code          String          @unique
+  name          String
+  description   String?
+  category      Category
+  subcategory   String?
+  brand         String?
+  model         String?
+  unit          Unit            @default(UNIDAD)
+  costPrice     Decimal         @default(0)
+  cashPrice     Decimal         @default(0)
+  creditPrice   Decimal         @default(0)
+  stock         Int             @default(0)
+  minStock      Int             @default(0)
+  location      String?
+  imageUrl      String?
+  status        ProductStatus   @default(ACTIVO)
+  supplierId    String?
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+  supplier      Supplier?       @relation(fields: [supplierId], references: [id])
+  purchaseItems PurchaseItem[]
+  saleItems     SaleItem[]
+  movements     StockMovement[]
+}
+
+model StockMovement {
+  id            String       @id @default(cuid())
+  productId     String
+  type          MovementType
+  quantity      Int
+  previousStock Int
+  newStock      Int
+  reason        String?
+  referenceId   String?
+  referenceType String?
+  userId        String
+  createdAt     DateTime     @default(now())
+  product       Product      @relation(fields: [productId], references: [id])
+  user          User         @relation(fields: [userId], references: [id])
+}
+
+model Customer {
+  id              String       @id @default(cuid())
+  code            String       @unique
+  type            CustomerType @default(MINORISTA)
+  name            String
+  ruc             String       @unique
+  phone           String?
+  mobile          String?
+  email           String?
+  address         String?
+  neighborhood    String?
+  city            String?
+  department      String?
+  reference1Name  String?
+  reference1Phone String?
+  reference2Name  String?
+  reference2Phone String?
+  employer        String?
+  position        String?
+  monthlyIncome   Decimal      @default(0)
+  creditLimit     Decimal      @default(0)
+  riskLevel       RiskLevel    @default(BAJO)
+  notes           String?
+  callmebotKey    String?
+  registeredBy    String?
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
+  creator         User?        @relation("RegisteredBy", fields: [registeredBy], references: [id])
+  payments        Payment[]
+  sales           Sale[]
+  notifications   NotificationLog[]
+}
+
+model Sale {
+  id          String       @id @default(cuid())
+  number      String       @unique
+  date        DateTime     @default(now())
+  customerId  String
+  sellerId    String
+  type        SaleType
+  channel     SaleChannel  @default(TIENDA)
+  subtotal    Decimal
+  discount    Decimal      @default(0)
+  total       Decimal
+  status      SaleStatus   @default(PENDIENTE)
+  notes       String?
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  commissions Commission[]
+  creditPlan  CreditPlan?
+  payments    Payment[]
+  customer    Customer     @relation(fields: [customerId], references: [id])
+  seller      User         @relation("Seller", fields: [sellerId], references: [id])
+  items       SaleItem[]
+}
+
+model SaleItem {
+  id          String  @id @default(cuid())
+  saleId      String
+  productId   String
+  productName String
+  quantity    Int
+  unitPrice   Decimal
+  discount    Decimal @default(0)
+  subtotal    Decimal
+  product     Product @relation(fields: [productId], references: [id])
+  sale        Sale    @relation(fields: [saleId], references: [id], onDelete: Cascade)
+}
+
+model CreditPlan {
+  id                String                 @id @default(cuid())
+  saleId            String                 @unique
+  downPayment       Decimal                @default(0)
+  financedAmount    Decimal
+  interestRate      Decimal
+  interestMode      InterestMode           @default(FRANCES)
+  installments      Int
+  frequency         Frequency              @default(MENSUAL)
+  installmentAmount Decimal
+  firstDueDate      DateTime
+  lateInterestRate  Decimal                @default(0)
+  createdAt         DateTime               @default(now())
+  amortizationTable AmortizationSchedule[]
+  sale              Sale                   @relation(fields: [saleId], references: [id], onDelete: Cascade)
+}
+
+model AmortizationSchedule {
+  id                String            @id @default(cuid())
+  creditPlanId      String
+  installmentNumber Int
+  dueDate           DateTime
+  principal         Decimal
+  interest          Decimal
+  total             Decimal
+  balance           Decimal
+  status            InstallmentStatus @default(PENDIENTE)
+  paidAmount        Decimal           @default(0)
+  paidAt            DateTime?
+  creditPlan        CreditPlan        @relation(fields: [creditPlanId], references: [id], onDelete: Cascade)
+  commissions       Commission[]
+}
+
+model Payment {
+  id                  String        @id @default(cuid())
+  number              String        @unique
+  date                DateTime      @default(now())
+  customerId          String
+  saleId              String
+  receivedBy          String
+  amount              Decimal
+  paymentMethod       PaymentMethod @default(EFECTIVO)
+  lateInterestApplied Decimal       @default(0)
+  notes               String?
+  createdAt           DateTime      @default(now())
+  customer            Customer      @relation(fields: [customerId], references: [id])
+  collector           User          @relation("ReceivedBy", fields: [receivedBy], references: [id])
+  sale                Sale          @relation(fields: [saleId], references: [id])
+}
+
+model CommissionSettings {
+  id             String            @id @default(cuid())
+  cashSaleRate   Decimal           @default(0)
+  creditSaleRate Decimal           @default(0)
+  trigger        CommissionTrigger @default(AL_VENDER)
+  updatedBy      String?
+  updatedAt      DateTime          @updatedAt
+  updater        User?             @relation("UpdatedBy", fields: [updatedBy], references: [id])
+}
+
+model CommissionOverride {
+  id        String    @id @default(cuid())
+  userId    String?
+  category  Category?
+  rate      Decimal
+  updatedAt DateTime  @updatedAt
+}
+
+model Commission {
+  id            String                @id @default(cuid())
+  saleId        String
+  installmentId String?
+  userId        String
+  amount        Decimal
+  rate          Decimal
+  triggerType   CommissionTrigger
+  status        CommissionStatus      @default(PENDIENTE)
+  paidAt        DateTime?
+  paidBy        String?
+  createdAt     DateTime              @default(now())
+  installment   AmortizationSchedule? @relation(fields: [installmentId], references: [id])
+  payer         User?                 @relation("PaidBy", fields: [paidBy], references: [id])
+  sale          Sale                  @relation(fields: [saleId], references: [id])
+  recipient     User                  @relation("CommissionRecipient", fields: [userId], references: [id])
+}
+
+model Purchase {
+  id         String              @id @default(cuid())
+  number     String              @unique
+  date       DateTime            @default(now())
+  supplierId String
+  userId     String
+  type       PurchaseType
+  subtotal   Decimal
+  discount   Decimal             @default(0)
+  total      Decimal
+  status     PurchaseStatus      @default(PENDIENTE)
+  notes      String?
+  createdAt  DateTime            @default(now())
+  updatedAt  DateTime            @updatedAt
+  supplier   Supplier            @relation(fields: [supplierId], references: [id])
+  user       User                @relation("Buyer", fields: [userId], references: [id])
+  items      PurchaseItem[]
+  creditPlan SupplierCreditPlan?
+  payments   SupplierPayment[]
+}
+
+model PurchaseItem {
+  id          String   @id @default(cuid())
+  purchaseId  String
+  productId   String
+  productName String
+  quantity    Int
+  unitCost    Decimal
+  discount    Decimal  @default(0)
+  subtotal    Decimal
+  product     Product  @relation(fields: [productId], references: [id])
+  purchase    Purchase @relation(fields: [purchaseId], references: [id], onDelete: Cascade)
+}
+
+model SupplierCreditPlan {
+  id                String                         @id @default(cuid())
+  purchaseId        String                         @unique
+  downPayment       Decimal                        @default(0)
+  financedAmount    Decimal
+  installments      Int
+  frequency         Frequency                      @default(MENSUAL)
+  firstDueDate      DateTime
+  createdAt         DateTime                       @default(now())
+  amortizationTable SupplierAmortizationSchedule[]
+  purchase          Purchase                       @relation(fields: [purchaseId], references: [id], onDelete: Cascade)
+}
+
+model SupplierAmortizationSchedule {
+  id                String             @id @default(cuid())
+  creditPlanId      String
+  installmentNumber Int
+  dueDate           DateTime
+  amount            Decimal
+  status            InstallmentStatus  @default(PENDIENTE)
+  paidAmount        Decimal            @default(0)
+  paidAt            DateTime?
+  creditPlan        SupplierCreditPlan @relation(fields: [creditPlanId], references: [id], onDelete: Cascade)
+}
+
+model SupplierPayment {
+  id            String        @id @default(cuid())
+  number        String        @unique
+  date          DateTime      @default(now())
+  supplierId    String
+  purchaseId    String
+  userId        String
+  amount        Decimal
+  paymentMethod PaymentMethod @default(EFECTIVO)
+  notes         String?
+  createdAt     DateTime      @default(now())
+  purchase      Purchase      @relation(fields: [purchaseId], references: [id])
+  supplier      Supplier      @relation(fields: [supplierId], references: [id])
+  user          User          @relation("PaidByToSupplier", fields: [userId], references: [id])
+}
+
 enum Role {
   ADMIN
   VENDEDOR
@@ -145,248 +496,94 @@ enum CommissionStatus {
   PAGADA
 }
 
-model User {
-  id             String    @id @default(cuid())
-  name           String?
-  email          String?   @unique
-  emailVerified  DateTime?
-  image          String?
-  password       String? // Hasheada
-  role           Role      @default(VENDEDOR)
-  phone          String?
-  commissionRate Float     @default(0)
-  isActive       Boolean   @default(true)
-  createdAt      DateTime  @default(now())
-  updatedAt      DateTime  @updatedAt
-
-  accounts           Account[]
-  sessions           Session[]
-  sales              Sale[]               @relation("Seller")
-  payments           Payment[]            @relation("ReceivedBy")
-  movements          StockMovement[]
-  commissions        Commission[]         @relation("CommissionRecipient")
-  registeredCustomers Customer[]           @relation("RegisteredBy")
-  updatedSettings    CommissionSettings[] @relation("UpdatedBy")
-  commissionsPaid    Commission[]         @relation("PaidBy")
+enum PurchaseType {
+  CONTADO
+  CREDITO
 }
 
-model Supplier {
-  id           String    @id @default(cuid())
-  code         String    @unique
-  name         String
-  ruc          String?
-  contactName  String?
-  phone        String?
-  email        String?
-  categories   String? // JSON or comma separated
-  paymentTerms String?
-  notes        String?
-  createdAt    DateTime  @default(now())
-  updatedAt    DateTime  @updatedAt
-  products     Product[]
+enum PurchaseStatus {
+  PENDIENTE
+  COMPLETADA
+  CANCELADA
+  MORA
 }
 
-model Product {
-  id          String        @id @default(cuid())
-  code        String        @unique
-  name        String
-  description String?
-  category    Category
-  subcategory String?
-  brand       String?
-  model       String?
-  unit        Unit          @default(UNIDAD)
-  costPrice   Decimal       @default(0)
-  cashPrice   Decimal       @default(0)
-  creditPrice Decimal       @default(0)
-  stock       Int           @default(0)
-  minStock    Int           @default(0)
-  location    String?
-  imageUrl    String?
-  status      ProductStatus @default(ACTIVO)
-  supplierId  String?
-  createdAt   DateTime      @default(now())
-  updatedAt   DateTime      @updatedAt
-
-  supplier  Supplier?       @relation(fields: [supplierId], references: [id])
-  movements StockMovement[]
-  saleItems SaleItem[]
+enum CashStatus {
+  ABIERTA
+  CERRADA
 }
 
-model StockMovement {
-  id            String       @id @default(cuid())
-  productId     String
-  type          MovementType
-  quantity      Int
-  previousStock Int
-  newStock      Int
-  reason        String?
-  referenceId   String?
-  referenceType String? // VENTA|REMISION|AJUSTE
-  userId        String
-  createdAt     DateTime     @default(now())
-
-  product Product @relation(fields: [productId], references: [id])
-  user    User    @relation(fields: [userId], references: [id])
+enum WithdrawalCategory {
+  PAGO_PROVEEDOR
+  GASTO_OPERATIVO
+  ADELANTO_PERSONAL
+  DEVOLUCION
+  OTRO
 }
 
-model Customer {
-  id              String       @id @default(cuid())
-  code            String       @unique // CLI-0001
-  type            CustomerType @default(MINORISTA)
-  name            String
-  ruc             String       @unique
-  phone           String?
-  mobile          String?
-  email           String?
-  address         String?
-  neighborhood    String?
-  city            String?
-  department      String?
-  reference1Name  String?
-  reference1Phone String?
-  reference2Name  String?
-  reference2Phone String?
-  employer        String?
-  position        String?
-  monthlyIncome   Decimal      @default(0)
-  creditLimit     Decimal      @default(0)
-  riskLevel       RiskLevel    @default(BAJO)
+model CashRegister {
+  id              String           @id @default(cuid())
+  number          String           @unique
+  openedBy        String
+  closedBy        String?
+  openingBalance  Decimal          @default(0)
+  closingBalance  Decimal?
+  systemBalance   Decimal?
+  difference      Decimal?
+  status          CashStatus       @default(ABIERTA)
+  openedAt        DateTime         @default(now())
+  closedAt        DateTime?
   notes           String?
-  registeredBy    String?
-  createdAt       DateTime     @default(now())
-  updatedAt       DateTime     @updatedAt
-
-  creator  User?     @relation("RegisteredBy", fields: [registeredBy], references: [id])
-  sales    Sale[]
-  payments Payment[]
+  openedByUser    User             @relation("CashOpener", fields: [openedBy], references: [id])
+  closedByUser    User?            @relation("CashCloser", fields: [closedBy], references: [id])
+  withdrawals     CashWithdrawal[]
+  counts          CashCount[]
 }
 
-model Sale {
-  id         String      @id @default(cuid())
-  number     String      @unique // VTA-00001
-  date       DateTime    @default(now())
-  customerId String
-  sellerId   String
-  type       SaleType
-  channel    SaleChannel @default(TIENDA)
-  subtotal   Decimal
-  discount   Decimal     @default(0)
-  total      Decimal
-  status     SaleStatus  @default(PENDIENTE)
-  notes      String?
-  createdAt  DateTime    @default(now())
-  updatedAt  DateTime    @updatedAt
-
-  customer    Customer     @relation(fields: [customerId], references: [id])
-  seller      User         @relation("Seller", fields: [sellerId], references: [id])
-  items       SaleItem[]
-  creditPlan  CreditPlan?
-  payments    Payment[]
-  commissions Commission[]
+model CashWithdrawal {
+  id             String             @id @default(cuid())
+  number         String             @unique
+  cashRegisterId String
+  userId         String
+  amount         Decimal
+  concept        String
+  category       WithdrawalCategory @default(OTRO)
+  referenceType  String?
+  referenceId    String?
+  createdAt      DateTime           @default(now())
+  cashRegister   CashRegister       @relation(fields: [cashRegisterId], references: [id])
+  user           User               @relation("CashWithdrawer", fields: [userId], references: [id])
 }
 
-model SaleItem {
-  id          String  @id @default(cuid())
-  saleId      String
-  productId   String
-  productName String
-  quantity    Int
-  unitPrice   Decimal
-  discount    Decimal @default(0)
-  subtotal    Decimal
-
-  sale    Sale    @relation(fields: [saleId], references: [id], onDelete: Cascade)
-  product Product @relation(fields: [productId], references: [id])
+model CashCount {
+  id             String       @id @default(cuid())
+  cashRegisterId String
+  userId         String
+  countedAmount  Decimal
+  systemAmount   Decimal
+  difference     Decimal
+  notes          String?
+  createdAt      DateTime     @default(now())
+  cashRegister   CashRegister @relation(fields: [cashRegisterId], references: [id])
+  user           User         @relation("CashCounter", fields: [userId], references: [id])
 }
 
-model CreditPlan {
-  id                String       @id @default(cuid())
-  saleId            String       @unique
-  downPayment       Decimal      @default(0)
-  financedAmount    Decimal
-  interestRate      Decimal
-  interestMode      InterestMode @default(FRANCES)
-  installments      Int
-  frequency         Frequency    @default(MENSUAL)
-  installmentAmount Decimal
-  firstDueDate      DateTime
-  lateInterestRate  Decimal      @default(0)
-  createdAt         DateTime     @default(now())
-
-  sale              Sale                   @relation(fields: [saleId], references: [id], onDelete: Cascade)
-  amortizationTable AmortizationSchedule[]
-}
-
-model AmortizationSchedule {
-  id                String            @id @default(cuid())
-  creditPlanId      String
-  installmentNumber Int
-  dueDate           DateTime
-  principal         Decimal
-  interest          Decimal
-  total             Decimal
-  balance           Decimal
-  status            InstallmentStatus @default(PENDIENTE)
-  paidAmount        Decimal           @default(0)
-  paidAt            DateTime?
-
-  creditPlan  CreditPlan   @relation(fields: [creditPlanId], references: [id], onDelete: Cascade)
-  commissions Commission[]
-}
-
-model Payment {
-  id                  String        @id @default(cuid())
-  number              String        @unique // REC-00001
-  date                DateTime      @default(now())
-  customerId          String
-  saleId              String
-  receivedBy          String
-  amount              Decimal
-  paymentMethod       PaymentMethod @default(EFECTIVO)
-  lateInterestApplied Decimal       @default(0)
-  notes               String?
-  createdAt           DateTime      @default(now())
-
-  customer  Customer @relation(fields: [customerId], references: [id])
-  sale      Sale     @relation(fields: [saleId], references: [id])
-  collector User     @relation("ReceivedBy", fields: [receivedBy], references: [id])
-}
-
-model CommissionSettings {
-  id             String            @id @default(cuid())
-  cashSaleRate   Decimal           @default(0)
-  creditSaleRate Decimal           @default(0)
-  trigger        CommissionTrigger @default(AL_VENDER)
-  updatedBy      String?
-  updatedAt      DateTime          @updatedAt
-
-  updater User? @relation("UpdatedBy", fields: [updatedBy], references: [id])
-}
-
-model CommissionOverride {
-  id        String    @id @default(cuid())
-  userId    String?
-  category  Category?
-  rate      Decimal
-  updatedAt DateTime  @updatedAt
-}
-
-model Commission {
-  id            String            @id @default(cuid())
-  saleId        String
+model NotificationLog {
+  id            String      @id @default(cuid())
+  customerId    String
   installmentId String?
-  userId        String
-  amount        Decimal
-  rate          Decimal
-  triggerType   CommissionTrigger
-  status        CommissionStatus  @default(PENDIENTE)
-  paidAt        DateTime?
-  paidBy        String?
-  createdAt     DateTime          @default(now())
+  phone         String
+  message       String
+  status        NotifStatus @default(PENDIENTE)
+  errorMessage  String?
+  sentAt        DateTime?
+  createdAt     DateTime    @default(now())
+  customer      Customer    @relation(fields: [customerId], references: [id])
+}
 
-  sale        Sale                  @relation(fields: [saleId], references: [id])
-  installment AmortizationSchedule? @relation(fields: [installmentId], references: [id])
-  recipient   User                  @relation("CommissionRecipient", fields: [userId], references: [id])
-  payer       User?                 @relation("PaidBy", fields: [paidBy], references: [id])
+enum NotifStatus {
+  PENDIENTE
+  ENVIADO
+  FALLIDO
+  SIN_NUMERO
 }
