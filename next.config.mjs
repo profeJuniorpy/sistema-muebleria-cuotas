@@ -6,7 +6,7 @@ const nextConfig = {
   typescript: {
     ignoreBuildErrors: true,
   },
-  serverExternalPackages: ["@supabase/supabase-js", "@prisma/client", "prisma"],
+  serverExternalPackages: ["@prisma/client", "prisma"],
   images: {
     remotePatterns: [
       {
