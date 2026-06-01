@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import { supabaseServer, BUCKET } from "@/lib/supabase";
 
+export const dynamic = "force-dynamic";
+
 const MAX_SIZE = 3 * 1024 * 1024; // 3 MB
 const ALLOWED = ["image/jpeg", "image/png", "image/webp", "image/gif"];
 
