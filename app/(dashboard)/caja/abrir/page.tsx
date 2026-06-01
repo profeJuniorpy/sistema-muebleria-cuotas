@@ -6,6 +6,8 @@ import { Button } from "@/components/ui/button";
 import { ChevronLeft, Wallet } from "lucide-react";
 import Link from "next/link";
 
+export const dynamic = "force-dynamic";
+
 export default async function AbrirCajaPage() {
   const session = await auth();
   const role = (session?.user as any)?.role ?? "";

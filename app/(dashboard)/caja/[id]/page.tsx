@@ -34,6 +34,8 @@ import CajaRetiroDialog from "@/components/forms/caja-retiro-dialog";
 import CajaArqueoDialog from "@/components/forms/caja-arqueo-dialog";
 import CajaCierreDialog from "@/components/forms/caja-cierre-dialog";
 
+export const dynamic = "force-dynamic";
+
 const fmt = (n: number) =>
   new Intl.NumberFormat("es-PY", {
     style: "currency",

@@ -29,6 +29,8 @@ import {
 import { cn } from "@/lib/utils";
 import { CreditPayButton } from "./credit-pay-button";
 
+export const dynamic = "force-dynamic";
+
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
 const FREQ_LABEL: Record<string, string> = {

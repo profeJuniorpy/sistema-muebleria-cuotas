@@ -10,6 +10,8 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import {
+
+export const dynamic = "force-dynamic";
   Bell, CheckCircle2, XCircle, PhoneOff, Send, AlertTriangle,
 } from "lucide-react";
 

@@ -29,6 +29,8 @@ import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { Separator } from "@/components/ui/separator";
 
+export const dynamic = "force-dynamic";
+
 async function getSaleDetails(id: string) {
   try {
     const sale = await prisma.sale.findUnique({

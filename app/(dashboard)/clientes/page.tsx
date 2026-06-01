@@ -15,6 +15,8 @@ import Link from "next/link";
 import prisma from "@/lib/prisma";
 import { cn } from "@/lib/utils";
 
+export const dynamic = "force-dynamic";
+
 async function getCustomers() {
   try {
     return await prisma.customer.findMany({
