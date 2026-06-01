@@ -1,13 +1,13 @@
 import { NextResponse } from "next/server";
-import { supabaseServer, BUCKET } from "@/lib/supabase";
 
 export const dynamic = "force-dynamic";
 
-const MAX_SIZE = 3 * 1024 * 1024; // 3 MB
+const MAX_SIZE = 3 * 1024 * 1024;
 const ALLOWED = ["image/jpeg", "image/png", "image/webp", "image/gif"];
 
 export async function POST(req: Request) {
   try {
+    const { supabaseServer, BUCKET } = await import("@/lib/supabase");
     const form = await req.formData();
     const file = form.get("file") as File | null;
     const productCode = (form.get("code") as string | null) ?? "unknown";
@@ -24,7 +24,6 @@ export async function POST(req: Request) {
 
     const sb = supabaseServer();
 
-    // Crear bucket si no existe
     const { data: buckets } = await sb.storage.listBuckets();
     const exists = buckets?.some((b) => b.name === BUCKET);
     if (!exists) {
@@ -57,10 +56,10 @@ export async function POST(req: Request) {
 
 export async function DELETE(req: Request) {
   try {
+    const { supabaseServer, BUCKET } = await import("@/lib/supabase");
     const { url } = await req.json();
     if (!url) return NextResponse.json({ ok: true });
 
-    // Extraer path del URL público: .../storage/v1/object/public/product-images/PATH
     const match = url.match(/product-images\/(.+)$/);
     if (!match) return NextResponse.json({ ok: true });
 

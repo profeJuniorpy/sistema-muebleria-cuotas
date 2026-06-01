@@ -1,7 +1,5 @@
 import { NextResponse } from "next/server";
-import prisma from "@/lib/prisma";
-import ReceiptPDF from "@/components/pdf/receipt-pdf";
-import { renderToStream } from "@react-pdf/renderer";
+import React from "react";
 
 export const dynamic = "force-dynamic";
 
@@ -10,6 +8,12 @@ export async function GET(
   { params }: { params: { id: string } }
 ) {
   try {
+    const [{ default: prisma }, { default: ReceiptPDF }, { renderToStream }] = await Promise.all([
+      import("@/lib/prisma"),
+      import("@/components/pdf/receipt-pdf"),
+      import("@react-pdf/renderer"),
+    ]);
+
     const saleId = params.id;
     const [sale, company] = await Promise.all([
       prisma.sale.findUnique({
@@ -35,8 +39,6 @@ export async function GET(
       phone: "No disponible",
     };
 
-    // Para el recibo, normalmente necesitamos el último pago o un pago específico.
-    // Si no hay pagos, generamos un recibo de la entrega inicial si es crédito.
     const lastPayment = sale.payments[sale.payments.length - 1] || {
       number: "S/N",
       date: sale.date,
@@ -47,7 +49,15 @@ export async function GET(
 
     const installments: never[] = [];
 
-    const stream = await renderToStream(<ReceiptPDF receipt={lastPayment} customer={sale.customer} sale={sale} installments={installments} company={companyData} />);
+    const stream = await renderToStream(
+      React.createElement(ReceiptPDF, {
+        receipt: lastPayment,
+        customer: sale.customer,
+        sale,
+        installments,
+        company: companyData,
+      })
+    );
 
     return new NextResponse(stream as unknown as BodyInit, {
       headers: {

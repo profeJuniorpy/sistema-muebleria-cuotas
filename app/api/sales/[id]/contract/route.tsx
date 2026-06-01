@@ -1,7 +1,5 @@
 import { NextResponse } from "next/server";
-import prisma from "@/lib/prisma";
-import ContractPDF from "@/components/pdf/contract-pdf";
-import { renderToStream } from "@react-pdf/renderer";
+import React from "react";
 
 export const dynamic = "force-dynamic";
 
@@ -10,6 +8,12 @@ export async function GET(
   { params }: { params: { id: string } }
 ) {
   try {
+    const [{ default: prisma }, { default: ContractPDF }, { renderToStream }] = await Promise.all([
+      import("@/lib/prisma"),
+      import("@/components/pdf/contract-pdf"),
+      import("@react-pdf/renderer"),
+    ]);
+
     const saleId = params.id;
     const [sale, company] = await Promise.all([
       prisma.sale.findUnique({
@@ -20,9 +24,9 @@ export async function GET(
           creditPlan: {
             include: {
               amortizationTable: {
-                orderBy: { installmentNumber: "asc" }
-              }
-            }
+                orderBy: { installmentNumber: "asc" },
+              },
+            },
           },
         },
       }),
@@ -33,7 +37,6 @@ export async function GET(
       return new NextResponse("Contrato no disponible para esta venta", { status: 404 });
     }
 
-    // Verificar y asegurar que el cliente tenga dirección
     if (!sale.customer.address || !sale.customer.city) {
       await prisma.customer.update({
         where: { id: sale.customer.id },
@@ -42,15 +45,12 @@ export async function GET(
           city: sale.customer.city || "S/D",
         },
       });
-
-      // Actualizar el objeto sale.customer para que el PDF use los nuevos valores
       sale.customer = {
         ...sale.customer,
         address: sale.customer.address || "S/D",
         city: sale.customer.city || "S/D",
       };
     }
-
 
     const companyData = company || {
       name: "Empresa no configurada",
@@ -60,14 +60,14 @@ export async function GET(
     };
 
     const stream = await renderToStream(
-      <ContractPDF
-        sale={sale}
-        customer={sale.customer}
-        creditPlan={sale.creditPlan}
-        items={sale.items}
-        schedule={sale.creditPlan.amortizationTable}
-        company={companyData}
-      />
+      React.createElement(ContractPDF, {
+        sale,
+        customer: sale.customer,
+        creditPlan: sale.creditPlan,
+        items: sale.items,
+        schedule: sale.creditPlan.amortizationTable,
+        company: companyData,
+      })
     );
 
     return new NextResponse(stream as unknown as BodyInit, {
