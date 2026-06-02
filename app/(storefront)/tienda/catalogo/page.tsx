@@ -5,6 +5,8 @@ import { CategoryBadge } from "@/components/storefront/category-badge";
 import { ChevronLeft, ChevronRight, SearchX } from "lucide-react";
 import Link from "next/link";
 
+export const dynamic = "force-dynamic";
+
 interface SearchParams {
   category?: string;
   search?: string;

@@ -4,6 +4,8 @@ import { getPeriodDates } from "@/lib/period-utils";
 import { PrintActions } from "../../components/print-actions";
 import { PrintHeader, PrintFooter } from "../../components/print-header";
 
+export const dynamic = "force-dynamic";
+
 const TYPE_LABEL: Record<string, string> = { CONTADO: "Contado", CREDITO: "Crédito" };
 const CHANNEL_LABEL: Record<string, string> = { TIENDA: "Tienda", VISITA: "Visita", TELEFONICA: "Telefónica" };
 const STATUS_LABEL: Record<string, string> = { COMPLETADA: "Completada", PENDIENTE: "Pendiente", MORA: "En Mora", CANCELADA: "Cancelada" };

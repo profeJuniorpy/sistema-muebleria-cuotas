@@ -6,6 +6,8 @@ import { getStorefrontProductDetail, getStorefrontProducts, getCompanyContact } 
 import { ProductCard } from "@/components/storefront/product-card";
 import { AddToCartButton } from "./add-to-cart-button";
 
+export const dynamic = "force-dynamic";
+
 const fmt = (n: number) =>
   new Intl.NumberFormat("es-PY", {
     style: "currency",

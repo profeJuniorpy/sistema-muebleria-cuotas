@@ -10,6 +10,7 @@ import { CobranzasView } from "./cobranzas-view";
 
 export const dynamic = "force-dynamic";
 
+
 export default async function CobranzasPage() {
   // Marcar cuotas vencidas antes de cualquier consulta
   await updateOverdueInstallments();

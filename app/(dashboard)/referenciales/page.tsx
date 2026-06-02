@@ -12,6 +12,7 @@ import Link from "next/link";
 
 export const dynamic = "force-dynamic";
 
+
 export default async function ReferencialesPage() {
   const [suppliersCount, usersCount] = await Promise.all([
     prisma.supplier.count(),

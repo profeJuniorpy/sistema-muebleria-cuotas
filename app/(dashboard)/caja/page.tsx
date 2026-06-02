@@ -21,7 +21,6 @@ import Link from "next/link";
 import { cn } from "@/lib/utils";
 import {
 
-export const dynamic = "force-dynamic";
   Wallet,
   Plus,
   ArrowDownCircle,
@@ -29,6 +28,8 @@ export const dynamic = "force-dynamic";
   Calculator,
   TrendingUp,
 } from "lucide-react";
+
+export const dynamic = "force-dynamic";
 
 const fmt = (n: number) =>
   new Intl.NumberFormat("es-PY", {

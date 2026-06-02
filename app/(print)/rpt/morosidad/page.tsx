@@ -5,6 +5,8 @@ import { PrintHeader, PrintFooter } from "../../components/print-header";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
 
+export const dynamic = "force-dynamic";
+
 function fmt(n: number) {
   return new Intl.NumberFormat("es-PY").format(n);
 }

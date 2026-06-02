@@ -22,6 +22,7 @@ import { cn } from "@/lib/utils";
 
 export const dynamic = "force-dynamic";
 
+
 async function getSales() {
   try {
     const sales = await prisma.sale.findMany({

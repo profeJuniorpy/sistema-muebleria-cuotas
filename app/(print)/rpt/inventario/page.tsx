@@ -4,6 +4,8 @@ import { getPeriodDates } from "@/lib/period-utils";
 import { PrintActions } from "../../components/print-actions";
 import { PrintHeader, PrintFooter } from "../../components/print-header";
 
+export const dynamic = "force-dynamic";
+
 const CAT_LABEL: Record<string, string> = {
   MUEBLES: "Muebles",
   ELECTRODOMESTICOS: "Electrodomésticos",

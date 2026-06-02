@@ -23,6 +23,7 @@ import { cn } from "@/lib/utils";
 
 export const dynamic = "force-dynamic";
 
+
 async function getProducts() {
   try {
     const products = await prisma.product.findMany({

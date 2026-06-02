@@ -3,6 +3,8 @@ import { ArrowRight, Sofa, Tv, Smartphone, BedDouble, Package } from "lucide-rea
 import { getStorefrontProducts, getStorefrontCategories, getCompanyContact } from "@/lib/actions/storefront";
 import { ProductCard } from "@/components/storefront/product-card";
 
+export const dynamic = "force-dynamic";
+
 const CAT_ICONS: Record<string, React.ElementType> = {
   MUEBLES: Sofa,
   ELECTRODOMESTICOS: Tv,

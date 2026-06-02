@@ -10,6 +10,7 @@ import { ComisionesView } from "./comisiones-view";
 
 export const dynamic = "force-dynamic";
 
+
 export default async function ComisionesPage() {
   const session = await auth();
   const userId = (session?.user as any)?.id ?? "";

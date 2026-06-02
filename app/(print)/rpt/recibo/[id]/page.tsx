@@ -5,6 +5,8 @@ import prisma from "@/lib/prisma";
 import { AutoPrint } from "./auto-print";
 import { PrintActions } from "@/app/(print)/components/print-actions";
 
+export const dynamic = "force-dynamic";
+
 const METHOD_LABEL: Record<string, string> = {
   EFECTIVO: "EFECTIVO",
   TRANSFERENCIA: "TRANSFERENCIA",

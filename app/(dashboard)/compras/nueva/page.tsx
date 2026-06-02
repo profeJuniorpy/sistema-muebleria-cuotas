@@ -8,6 +8,7 @@ import PurchaseForm from "@/components/forms/purchase-form";
 
 export const dynamic = "force-dynamic";
 
+
 export default async function NuevaCompraPage() {
   const session = await auth();
   const buyerId = (session?.user as any)?.id ?? "";
