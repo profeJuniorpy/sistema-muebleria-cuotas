@@ -1,6 +1,4 @@
 import prisma from "@/lib/prisma";
-
-export const dynamic = "force-dynamic";
 import SalesChart from "@/components/charts/sales-chart";
 import {
   Card,
@@ -12,12 +10,12 @@ import {
 import {
   TrendingUp,
   Users,
-  CreditCard,
   AlertTriangle,
   ArrowUpRight,
-  ArrowDownRight,
   Package,
 } from "lucide-react";
+
+export const dynamic = "force-dynamic";
 
 async function getStats() {
   const [salesCount, customersCount, totalSales, lowStockResult] = await Promise.all([
@@ -52,7 +50,7 @@ export default async function DashboardPage() {
       <div className="flex flex-col gap-2">
         <h1 className="text-3xl font-bold tracking-tight">Dashboard Ejecutivo</h1>
         <p className="text-muted-foreground text-lg">
-          Resumen operativo y financiero de la inmobiliaria.
+          Resumen operativo y financiero de la mueblería.
         </p>
       </div>
 
@@ -65,20 +63,20 @@ export default async function DashboardPage() {
           <CardContent>
             <div className="text-2xl font-bold">{new Intl.NumberFormat().format(stats.totalSales)} GS</div>
             <p className="text-xs text-emerald-600 flex items-center mt-1">
-              <ArrowUpRight className="h-3 w-3 mr-1" /> +12% desde el último mes
+              <ArrowUpRight className="h-3 w-3 mr-1" /> {stats.salesCount} ventas registradas
             </p>
           </CardContent>
         </Card>
 
         <Card className="hover:shadow-md transition-shadow">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium">Clientes Nuevos</CardTitle>
+            <CardTitle className="text-sm font-medium">Clientes</CardTitle>
             <Users className="h-4 w-4 text-blue-500" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">+{stats.customersCount}</div>
+            <div className="text-2xl font-bold">{stats.customersCount}</div>
             <p className="text-xs text-muted-foreground flex items-center mt-1">
-              Total registrado en el sistema
+              Total registrados en el sistema
             </p>
           </CardContent>
         </Card>
@@ -89,9 +87,9 @@ export default async function DashboardPage() {
             <AlertTriangle className="h-4 w-4 text-amber-500" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">3.2M GS</div>
+            <div className="text-2xl font-bold">—</div>
             <p className="text-xs text-amber-600 flex items-center mt-1">
-              8 cuotas vencidas detectadas
+              Ver módulo de cobranzas
             </p>
           </CardContent>
         </Card>
@@ -112,7 +110,7 @@ export default async function DashboardPage() {
 
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
         <SalesChart data={mockChartData} />
-        
+
         <Card className="col-span-3">
           <CardHeader>
             <CardTitle>Canales de Venta</CardTitle>
@@ -120,24 +118,18 @@ export default async function DashboardPage() {
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              <div className="flex items-center">
-                <div className="w-full bg-zinc-100 rounded-full h-2.5">
-                  <div className="bg-emerald-500 h-2.5 rounded-full w-[65%]"></div>
+              {[
+                { label: "Tienda (65%)", pct: "65%", color: "bg-emerald-500" },
+                { label: "Redes (25%)", pct: "25%", color: "bg-blue-500" },
+                { label: "Visita (10%)", pct: "10%", color: "bg-amber-400" },
+              ].map(({ label, pct, color }) => (
+                <div key={label} className="flex items-center">
+                  <div className="w-full bg-zinc-100 rounded-full h-2.5">
+                    <div className={`${color} h-2.5 rounded-full`} style={{ width: pct }} />
+                  </div>
+                  <span className="ml-4 text-sm font-medium whitespace-nowrap">{label}</span>
                 </div>
-                <span className="ml-4 text-sm font-medium">Tienda (65%)</span>
-              </div>
-              <div className="flex items-center">
-                <div className="w-full bg-zinc-100 rounded-full h-2.5">
-                  <div className="bg-blue-500 h-2.5 rounded-full w-[25%]"></div>
-                </div>
-                <span className="ml-4 text-sm font-medium">Redes (25%)</span>
-              </div>
-              <div className="flex items-center">
-                <div className="w-full bg-zinc-100 rounded-full h-2.5">
-                  <div className="bg-amber-400 h-2.5 rounded-full w-[10%]"></div>
-                </div>
-                <span className="ml-4 text-sm font-medium">Visita (10%)</span>
-              </div>
+              ))}
             </div>
           </CardContent>
         </Card>
