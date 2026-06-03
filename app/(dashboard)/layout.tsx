@@ -13,8 +13,12 @@ export default async function DashboardLayout({
   try {
     session = await auth();
   } catch (e: any) {
-    console.error("[dashboard-layout] auth() error:", e?.message, e?.code);
-    throw e;
+    const msg = e?.message ?? String(e);
+    return (
+      <div style={{padding:24,fontFamily:"monospace",background:"#fee2e2",color:"#991b1b",borderRadius:8,margin:16}}>
+        <b>Error en auth():</b><br/>{msg}
+      </div>
+    );
   }
 
   if (!session) {
