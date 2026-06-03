@@ -43,7 +43,13 @@ const mockChartData = [
 ];
 
 export default async function DashboardPage() {
-  const stats = await getStats();
+  let stats;
+  try {
+    stats = await getStats();
+  } catch (e: any) {
+    console.error("[dashboard] getStats error:", e?.message, e?.code, e?.meta);
+    throw e;
+  }
 
   return (
     <div className="space-y-6">
