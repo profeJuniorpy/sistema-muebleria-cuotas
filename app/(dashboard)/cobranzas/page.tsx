@@ -12,27 +12,17 @@ export const dynamic = "force-dynamic";
 
 
 export default async function CobranzasPage() {
-  try {
-    await updateOverdueInstallments();
-  } catch (e) {
-    console.error("[cobranzas] updateOverdueInstallments:", e);
-  }
+  await updateOverdueInstallments();
 
   const session = await auth();
   const userId = (session?.user as any)?.id ?? "";
 
-  let stats, pendingInstallments, paymentHistory, customers;
-  try {
-    [stats, pendingInstallments, paymentHistory, customers] = await Promise.all([
-      getCobranzasStats(),
-      getPendingInstallments(),
-      getPaymentHistory(),
-      getCustomersWithPendingInstallments(),
-    ]);
-  } catch (e: any) {
-    console.error("[cobranzas] DB error:", e?.message, e?.code);
-    throw e;
-  }
+  const [stats, pendingInstallments, paymentHistory, customers] = await Promise.all([
+    getCobranzasStats(),
+    getPendingInstallments(),
+    getPaymentHistory(),
+    getCustomersWithPendingInstallments(),
+  ]);
 
   return (
     <CobranzasView

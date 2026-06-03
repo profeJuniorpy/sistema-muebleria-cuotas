@@ -43,17 +43,7 @@ const mockChartData = [
 ];
 
 export default async function DashboardPage() {
-  let stats;
-  try {
-    stats = await getStats();
-  } catch (e: any) {
-    const msg = e?.message ?? String(e);
-    return (
-      <div style={{padding:24,fontFamily:"monospace",background:"#fee2e2",color:"#991b1b",borderRadius:8,margin:16}}>
-        <b>Error en getStats():</b><br/>{msg}
-      </div>
-    );
-  }
+  const stats = await getStats();
 
   return (
     <div className="space-y-6">

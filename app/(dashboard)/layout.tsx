@@ -9,17 +9,7 @@ export default async function DashboardLayout({
 }: {
   children: React.ReactNode;
 }) {
-  let session;
-  try {
-    session = await auth();
-  } catch (e: any) {
-    const msg = e?.message ?? String(e);
-    return (
-      <div style={{padding:24,fontFamily:"monospace",background:"#fee2e2",color:"#991b1b",borderRadius:8,margin:16}}>
-        <b>Error en auth():</b><br/>{msg}
-      </div>
-    );
-  }
+  const session = await auth();
 
   if (!session) {
     redirect("/login");
