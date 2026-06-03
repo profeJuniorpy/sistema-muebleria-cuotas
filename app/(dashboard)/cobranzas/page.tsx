@@ -12,18 +12,27 @@ export const dynamic = "force-dynamic";
 
 
 export default async function CobranzasPage() {
-  // Marcar cuotas vencidas antes de cualquier consulta
-  await updateOverdueInstallments();
+  try {
+    await updateOverdueInstallments();
+  } catch (e) {
+    console.error("[cobranzas] updateOverdueInstallments:", e);
+  }
 
   const session = await auth();
   const userId = (session?.user as any)?.id ?? "";
 
-  const [stats, pendingInstallments, paymentHistory, customers] = await Promise.all([
-    getCobranzasStats(),
-    getPendingInstallments(),
-    getPaymentHistory(),
-    getCustomersWithPendingInstallments(),
-  ]);
+  let stats, pendingInstallments, paymentHistory, customers;
+  try {
+    [stats, pendingInstallments, paymentHistory, customers] = await Promise.all([
+      getCobranzasStats(),
+      getPendingInstallments(),
+      getPaymentHistory(),
+      getCustomersWithPendingInstallments(),
+    ]);
+  } catch (e: any) {
+    console.error("[cobranzas] DB error:", e?.message, e?.code);
+    throw e;
+  }
 
   return (
     <CobranzasView
