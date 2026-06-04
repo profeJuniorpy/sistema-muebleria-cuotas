@@ -147,9 +147,7 @@ export async function getStorefrontCategories() {
 // ─── Company contact ──────────────────────────────────────────────────────────
 
 export async function getCompanyContact() {
-  const config = await prisma.companyConfig.findFirst({
-    select: { name: true, mobile: true, phone: true, address: true, city: true, email: true, logoUrl: true },
-  });
+  const config = await prisma.companyConfig.findFirst() as any;
 
   return {
     name: config?.name ?? "Mueblería",
@@ -157,6 +155,6 @@ export async function getCompanyContact() {
     address: config?.address ?? null,
     city: config?.city ?? null,
     email: config?.email ?? null,
-    logoUrl: (config as any)?.logoUrl ?? null,
+    logoUrl: config?.logoUrl ?? null,
   };
 }
