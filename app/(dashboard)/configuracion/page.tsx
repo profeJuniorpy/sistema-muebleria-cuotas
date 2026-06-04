@@ -9,10 +9,18 @@ export default async function ConfiguracionPage() {
   const session = await auth();
   const userId = (session?.user as any)?.id ?? "";
 
-  const [company, commissions] = await Promise.all([
-    getCompanyConfig(),
-    getCommissionSettings(),
-  ]);
+  let company: Awaited<ReturnType<typeof getCompanyConfig>>;
+  let commissions: Awaited<ReturnType<typeof getCommissionSettings>>;
+
+  try {
+    [company, commissions] = await Promise.all([
+      getCompanyConfig(),
+      getCommissionSettings(),
+    ]);
+  } catch (err: any) {
+    console.error("[configuracion-page] data fetch failed:", err?.message, err?.stack);
+    throw err;
+  }
 
   return (
     <div className="space-y-6">

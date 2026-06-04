@@ -138,12 +138,17 @@ const commissionSchema = z.object({
 export type CommissionSettingsData = z.infer<typeof commissionSchema>;
 
 export async function getCommissionSettings(): Promise<CommissionSettingsData> {
-  const s = await prisma.commissionSettings.findFirst();
-  return {
-    cashSaleRate: Number(s?.cashSaleRate ?? 0),
-    creditSaleRate: Number(s?.creditSaleRate ?? 0),
-    trigger: (s?.trigger as any) ?? "AL_VENDER",
-  };
+  try {
+    const s = await prisma.commissionSettings.findFirst();
+    return {
+      cashSaleRate: Number(s?.cashSaleRate ?? 0),
+      creditSaleRate: Number(s?.creditSaleRate ?? 0),
+      trigger: (s?.trigger as any) ?? "AL_VENDER",
+    };
+  } catch (err) {
+    console.error("[getCommissionSettings] DB query failed:", err);
+    return { cashSaleRate: 0, creditSaleRate: 0, trigger: "AL_VENDER" };
+  }
 }
 
 export async function saveCommissionSettings(
