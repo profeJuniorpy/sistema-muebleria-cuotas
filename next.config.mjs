@@ -7,6 +7,11 @@ const nextConfig = {
     ignoreBuildErrors: true,
   },
   serverExternalPackages: ["@prisma/client", "prisma"],
+  experimental: {
+    serverActions: {
+      bodySizeLimit: "5mb",
+    },
+  },
   images: {
     remotePatterns: [
       {

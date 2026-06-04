@@ -5,7 +5,7 @@ import { Upload, X, Loader2, ImageIcon } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 
-const MAX_SIZE = 1 * 1024 * 1024; // 1 MB — logo no necesita más
+const MAX_SIZE = 500 * 1024; // 500 KB → base64 ~670 KB, bien bajo el límite de 5 MB del Server Action
 const ALLOWED = ["image/jpeg", "image/png", "image/webp"];
 
 interface Props {
@@ -26,7 +26,7 @@ export function LogoUpload({ value, onChange, className }: Props) {
         return;
       }
       if (file.size > MAX_SIZE) {
-        toast.error("El logo supera 1 MB. Reducí el tamaño de la imagen.");
+        toast.error("El logo supera 500 KB. Reducí el tamaño de la imagen.");
         return;
       }
 
@@ -141,7 +141,7 @@ export function LogoUpload({ value, onChange, className }: Props) {
       )}
 
       <p className="text-xs text-muted-foreground text-center">
-        PNG, JPG o WebP · Máx 3 MB<br />
+        PNG, JPG o WebP · Máx 500 KB<br />
         Clic o arrastrá la imagen
       </p>
 
