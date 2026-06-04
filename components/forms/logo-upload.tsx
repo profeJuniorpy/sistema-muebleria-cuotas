@@ -22,8 +22,9 @@ export function LogoUpload({ value, onChange, className }: Props) {
       try {
         const form = new FormData();
         form.append("file", file);
+        form.append("code", "company-logo");
 
-        const res = await fetch("/api/upload/logo", {
+        const res = await fetch("/api/upload/product-image", {
           method: "POST",
           body: form,
         });
@@ -48,7 +49,7 @@ export function LogoUpload({ value, onChange, className }: Props) {
   async function handleRemove() {
     if (!value) return;
     try {
-      await fetch("/api/upload/logo", {
+      await fetch("/api/upload/product-image", {
         method: "DELETE",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ url: value }),
