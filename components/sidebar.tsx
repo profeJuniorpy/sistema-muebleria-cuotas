@@ -30,9 +30,11 @@ import { signOut } from "next-auth/react";
 
 interface SidebarProps {
   role: string;
+  logoUrl?: string | null;
+  companyName?: string | null;
 }
 
-export default function Sidebar({ role }: SidebarProps) {
+export default function Sidebar({ role, logoUrl, companyName }: SidebarProps) {
   const pathname = usePathname();
   const [isOpen, setIsOpen] = useState(false);
 
@@ -120,38 +122,54 @@ export default function Sidebar({ role }: SidebarProps) {
   const filteredRoutes = routes.filter((route) => route.roles.includes(role));
 
   const SidebarContent = () => (
-    <div className="flex h-full flex-col bg-zinc-950 text-white">
-      <div className="px-6 py-8">
-        <h1 className="text-xl font-bold tracking-tight text-white">
-          Mueblería ERP
-        </h1>
-        <p className="text-xs text-zinc-400 mt-1 uppercase tracking-widest">
-          {role} Panel
-        </p>
+    <div className="flex h-full flex-col bg-[#1a3a8c] text-white">
+      <div className="px-4 py-5 flex items-center gap-3 border-b border-white/10">
+        {logoUrl ? (
+          /* eslint-disable-next-line @next/next/no-img-element */
+          <img
+            src={logoUrl}
+            alt={companyName ?? "Logo"}
+            className="h-12 w-12 rounded-full object-contain bg-white p-0.5 shrink-0 shadow"
+          />
+        ) : (
+          <div className="h-12 w-12 rounded-full bg-white/10 flex items-center justify-center shrink-0 border border-white/20">
+            <span className="text-white text-lg font-bold">
+              {(companyName ?? "E").charAt(0).toUpperCase()}
+            </span>
+          </div>
+        )}
+        <div>
+          <h1 className="text-sm font-bold leading-tight text-white">
+            {companyName ?? "ERP Mueblería"}
+          </h1>
+          <p className="text-xs text-blue-200 uppercase tracking-widest mt-0.5">
+            {role}
+          </p>
+        </div>
       </div>
-      <ScrollArea className="flex-1 px-3">
-        <div className="space-y-1">
+      <ScrollArea className="flex-1 px-3 pt-3">
+        <div className="space-y-0.5">
           {filteredRoutes.map((route) => (
             <Link
               key={route.href}
               href={route.href}
               className={cn(
-                "group flex items-center rounded-lg px-3 py-2 text-sm font-medium transition-colors hover:bg-zinc-800 hover:text-white",
+                "group flex items-center rounded-lg px-3 py-2 text-sm font-medium transition-colors hover:bg-white/10 hover:text-white",
                 pathname === route.href
-                  ? "bg-zinc-800 text-white"
-                  : "text-zinc-400"
+                  ? "bg-orange-500 text-white shadow-sm"
+                  : "text-blue-100"
               )}
             >
-              <route.icon className="mr-3 h-5 w-5" />
+              <route.icon className="mr-3 h-5 w-5 shrink-0" />
               {route.label}
             </Link>
           ))}
         </div>
       </ScrollArea>
-      <div className="mt-auto p-4 border-t border-zinc-800">
+      <div className="mt-auto p-4 border-t border-white/10">
         <Button
           variant="ghost"
-          className="w-full justify-start text-zinc-400 hover:text-white hover:bg-zinc-800"
+          className="w-full justify-start text-blue-100 hover:text-white hover:bg-white/10"
           onClick={() => signOut()}
         >
           <LogOut className="mr-3 h-5 w-5" />

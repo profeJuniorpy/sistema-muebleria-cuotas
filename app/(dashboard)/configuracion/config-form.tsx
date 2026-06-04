@@ -44,6 +44,7 @@ import {
   type CompanyConfigData,
   type CommissionSettingsData,
 } from "@/lib/actions/config";
+import { LogoUpload } from "@/components/forms/logo-upload";
 
 // ─── Schemas ──────────────────────────────────────────────────────────────────
 
@@ -181,6 +182,35 @@ export default function ConfigForm({ company, commissions, userId }: ConfigFormP
         <Form {...companyForm}>
           <form onSubmit={companyForm.handleSubmit(onSaveCompany)} className="space-y-6">
 
+            {/* Logo de la empresa */}
+            <Card className="border-2 border-primary/20">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2 text-base text-primary">
+                  <Building2 className="h-4 w-4" /> Logo de la Empresa
+                </CardTitle>
+                <CardDescription>
+                  Aparece en encabezados de informes, recibos, contratos y en la tienda online.
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <FormField
+                  control={companyForm.control}
+                  name="logoUrl"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormControl>
+                        <LogoUpload
+                          value={field.value}
+                          onChange={(url) => field.onChange(url ?? "")}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </CardContent>
+            </Card>
+
             {/* Datos básicos */}
             <Card>
               <CardHeader>
@@ -215,18 +245,6 @@ export default function ConfigForm({ company, commissions, userId }: ConfigFormP
                         <Input {...field} placeholder="80012345-6" />
                       </FormControl>
                       <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={companyForm.control}
-                  name="logoUrl"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>URL del Logo</FormLabel>
-                      <FormControl>
-                        <Input {...field} placeholder="https://..." />
-                      </FormControl>
                     </FormItem>
                   )}
                 />

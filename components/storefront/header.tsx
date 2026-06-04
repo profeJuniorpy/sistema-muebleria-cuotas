@@ -9,6 +9,7 @@ import { CartSheet } from "./cart-sheet";
 interface Props {
   companyName: string;
   phone: string | null;
+  logoUrl?: string | null;
 }
 
 function SearchBar() {
@@ -31,25 +32,32 @@ function SearchBar() {
         value={value}
         onChange={(e) => setValue(e.target.value)}
         placeholder="Buscar productos..."
-        className="w-full rounded-xl border border-zinc-200 bg-zinc-50 pl-9 pr-4 py-2 text-sm placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-zinc-900/20 focus:border-zinc-400"
+        className="w-full rounded-xl border border-blue-200 bg-blue-50/50 pl-9 pr-4 py-2 text-sm placeholder:text-blue-300 focus:outline-none focus:ring-2 focus:ring-blue-800/20 focus:border-blue-400"
       />
     </form>
   );
 }
 
-export function StorefrontHeader({ companyName, phone }: Props) {
+export function StorefrontHeader({ companyName, phone, logoUrl }: Props) {
   return (
-    <header className="sticky top-0 z-30 border-b border-zinc-200 bg-white/90 backdrop-blur-sm">
+    <header className="sticky top-0 z-30 border-b border-blue-100 bg-white/95 backdrop-blur-sm shadow-sm">
       <div className="mx-auto flex h-16 max-w-7xl items-center gap-4 px-4 sm:px-6">
         {/* Logo */}
         <Link
           href="/tienda"
-          className="flex items-center gap-2 font-bold text-zinc-900 shrink-0"
+          className="flex items-center gap-2.5 shrink-0"
         >
-          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-zinc-900 text-white">
-            <Store className="h-4 w-4" />
+          <div className="flex h-10 w-10 items-center justify-center rounded-full overflow-hidden border-2 border-blue-800 bg-white shadow-sm shrink-0">
+            {logoUrl ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img src={logoUrl} alt={companyName} className="h-full w-full object-contain" />
+            ) : (
+              <span className="text-[#1a3a8c] font-bold text-lg">
+                {companyName.charAt(0).toUpperCase()}
+              </span>
+            )}
           </div>
-          <span className="hidden sm:block text-sm">{companyName}</span>
+          <span className="hidden sm:block text-sm font-bold text-[#1a3a8c]">{companyName}</span>
         </Link>
 
         {/* Search */}
@@ -63,13 +71,13 @@ export function StorefrontHeader({ companyName, phone }: Props) {
         <nav className="hidden md:flex items-center gap-1 text-sm font-medium">
           <Link
             href="/tienda"
-            className="rounded-lg px-3 py-2 text-zinc-600 hover:text-zinc-900 hover:bg-zinc-100 transition-colors"
+            className="rounded-lg px-3 py-2 text-[#1a3a8c] hover:text-white hover:bg-[#1a3a8c] transition-colors"
           >
             Inicio
           </Link>
           <Link
             href="/tienda/catalogo"
-            className="rounded-lg px-3 py-2 text-zinc-600 hover:text-zinc-900 hover:bg-zinc-100 transition-colors"
+            className="rounded-lg px-3 py-2 text-[#1a3a8c] hover:text-white hover:bg-[#1a3a8c] transition-colors"
           >
             Catálogo
           </Link>

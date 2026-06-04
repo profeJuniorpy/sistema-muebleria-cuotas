@@ -59,6 +59,8 @@ export async function GET(
       phone: "No disponible",
     };
 
+    const logoUrl = (company as any)?.logoUrl ?? undefined;
+
     const stream = await renderToStream(
       React.createElement(ContractPDF, {
         sale,
@@ -67,6 +69,7 @@ export async function GET(
         items: sale.items,
         schedule: sale.creditPlan.amortizationTable,
         company: companyData,
+        logoUrl,
       })
     );
 

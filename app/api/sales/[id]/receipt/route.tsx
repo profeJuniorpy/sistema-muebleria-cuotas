@@ -49,6 +49,8 @@ export async function GET(
 
     const installments: never[] = [];
 
+    const logoUrl = (company as any)?.logoUrl ?? undefined;
+
     const stream = await renderToStream(
       React.createElement(ReceiptPDF, {
         receipt: lastPayment,
@@ -56,6 +58,7 @@ export async function GET(
         sale,
         installments,
         company: companyData,
+        logoUrl,
       })
     );
 

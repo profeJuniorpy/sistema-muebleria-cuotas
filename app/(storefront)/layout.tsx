@@ -9,52 +9,59 @@ export default async function StorefrontLayout({ children }: { children: ReactNo
 
   return (
     <CartProvider>
-      <div className="min-h-screen flex flex-col bg-zinc-50">
-        <StorefrontHeader companyName={company.name} phone={company.phone} />
+      <div className="min-h-screen flex flex-col bg-blue-50/30">
+        <StorefrontHeader companyName={company.name} phone={company.phone} logoUrl={company.logoUrl} />
 
         <main className="flex-1">
           {children}
         </main>
 
-        <footer className="border-t border-zinc-200 bg-white mt-16">
+        <footer className="border-t border-blue-100 bg-[#1a3a8c] mt-16">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 py-10">
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-8">
-              <div>
-                <p className="font-bold text-zinc-900 text-lg">{company.name}</p>
-                {company.address && (
-                  <p className="text-sm text-zinc-500 mt-1">{company.address}</p>
+              <div className="flex items-start gap-3">
+                {company.logoUrl && (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img src={company.logoUrl} alt={company.name} className="h-14 w-14 rounded-full object-contain bg-white p-0.5 shadow shrink-0 mt-0.5" />
                 )}
-                {company.city && (
-                  <p className="text-sm text-zinc-500">{company.city}</p>
-                )}
+                <div>
+                  <p className="font-bold text-white text-base">{company.name}</p>
+                  <p className="text-xs text-blue-200 mt-0.5 italic">Cerca de ti, siempre contigo</p>
+                  {company.address && (
+                    <p className="text-sm text-blue-200 mt-1">{company.address}</p>
+                  )}
+                  {company.city && (
+                    <p className="text-sm text-blue-200">{company.city}</p>
+                  )}
+                </div>
               </div>
               <div>
-                <p className="text-sm font-semibold text-zinc-700 mb-2">Contacto</p>
+                <p className="text-sm font-semibold text-orange-400 mb-2 uppercase tracking-wide">Contacto</p>
                 {company.phone && (
                   <a
                     href={`https://wa.me/${company.phone.replace(/\D/g, "")}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-sm text-zinc-500 hover:text-[#25D366] transition-colors"
+                    className="text-sm text-blue-200 hover:text-orange-400 transition-colors"
                   >
                     WhatsApp: {company.phone}
                   </a>
                 )}
                 {company.email && (
-                  <p className="text-sm text-zinc-500 mt-1">{company.email}</p>
+                  <p className="text-sm text-blue-200 mt-1">{company.email}</p>
                 )}
               </div>
               <div>
-                <p className="text-sm font-semibold text-zinc-700 mb-2">Tienda</p>
-                <nav className="flex flex-col gap-1 text-sm text-zinc-500">
-                  <Link href="/tienda" className="hover:text-zinc-900 transition-colors">Inicio</Link>
-                  <Link href="/tienda/catalogo" className="hover:text-zinc-900 transition-colors">Catálogo</Link>
-                  <Link href="/tienda/catalogo?category=MUEBLES" className="hover:text-zinc-900 transition-colors">Muebles</Link>
-                  <Link href="/tienda/catalogo?category=ELECTRODOMESTICOS" className="hover:text-zinc-900 transition-colors">Electrodomésticos</Link>
+                <p className="text-sm font-semibold text-orange-400 mb-2 uppercase tracking-wide">Tienda</p>
+                <nav className="flex flex-col gap-1 text-sm text-blue-200">
+                  <Link href="/tienda" className="hover:text-orange-400 transition-colors">Inicio</Link>
+                  <Link href="/tienda/catalogo" className="hover:text-orange-400 transition-colors">Catálogo</Link>
+                  <Link href="/tienda/catalogo?category=MUEBLES" className="hover:text-orange-400 transition-colors">Muebles</Link>
+                  <Link href="/tienda/catalogo?category=ELECTRODOMESTICOS" className="hover:text-orange-400 transition-colors">Electrodomésticos</Link>
                 </nav>
               </div>
             </div>
-            <div className="mt-8 border-t pt-6 text-xs text-zinc-400 text-center">
+            <div className="mt-8 border-t border-white/10 pt-6 text-xs text-blue-300 text-center">
               © {new Date().getFullYear()} {company.name}. Todos los derechos reservados.
             </div>
           </div>

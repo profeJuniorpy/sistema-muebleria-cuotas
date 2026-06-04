@@ -147,7 +147,11 @@ export default async function ReceiptTicketPage({
       >
         {/* Encabezado empresa */}
         <div style={{ textAlign: "center", marginBottom: "6px" }}>
-          <div style={{ fontWeight: 700, fontSize: "11pt", textTransform: "uppercase" }}>
+          {company?.logoUrl && (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img src={company.logoUrl} alt="Logo" style={{ width: 48, height: 48, objectFit: "contain", borderRadius: "50%", margin: "0 auto 4px", display: "block", border: "1px solid #1a3a8c" }} />
+          )}
+          <div style={{ fontWeight: 700, fontSize: "11pt", textTransform: "uppercase", color: "#1a3a8c" }}>
             {company?.name ?? "MUEBLERÍA ERP"}
           </div>
           {company?.ruc && <div style={{ fontSize: "8pt" }}>RUC: {company.ruc}</div>}

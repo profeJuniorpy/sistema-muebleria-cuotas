@@ -148,7 +148,7 @@ export async function getStorefrontCategories() {
 
 export async function getCompanyContact() {
   const config = await prisma.companyConfig.findFirst({
-    select: { name: true, mobile: true, phone: true, address: true, city: true, email: true },
+    select: { name: true, mobile: true, phone: true, address: true, city: true, email: true, logoUrl: true },
   });
 
   return {
@@ -157,5 +157,6 @@ export async function getCompanyContact() {
     address: config?.address ?? null,
     city: config?.city ?? null,
     email: config?.email ?? null,
+    logoUrl: (config as any)?.logoUrl ?? null,
   };
 }
