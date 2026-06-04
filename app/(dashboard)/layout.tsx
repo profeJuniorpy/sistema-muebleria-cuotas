@@ -17,7 +17,13 @@ export default async function DashboardLayout({
   }
 
   const role = (session.user as any)?.role || "VENDEDOR";
-  const companyRow = await prisma.companyConfig.findFirst() as any;
+
+  let companyRow: any = null;
+  try {
+    companyRow = await prisma.companyConfig.findFirst() as any;
+  } catch (err) {
+    console.error("[dashboard-layout] companyConfig query failed:", err);
+  }
 
   return (
     <div className="flex h-screen overflow-hidden bg-secondary/30">

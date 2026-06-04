@@ -39,32 +39,24 @@ export type CompanyConfigData = z.infer<typeof companySchema>;
 
 // ─── Get ──────────────────────────────────────────────────────────────────────
 
-export async function getCompanyConfig(): Promise<CompanyConfigData & { id?: string }> {
-  const config = await prisma.companyConfig.findFirst();
+const EMPTY_CONFIG = {
+  name: "", ruc: "", phone: "", mobile: "", email: "", website: "",
+  address: "", city: "", department: "", legalRepresentative: "",
+  legalRepresentativeCI: "", bankName: "", bankAccount: "",
+  bankAccountType: "", timbrado: "", establishmentNumber: "",
+  dispatchPoint: "", logoUrl: "", footerText: "",
+};
 
-  if (!config) {
-    return {
-      name: "",
-      ruc: "",
-      phone: "",
-      mobile: "",
-      email: "",
-      website: "",
-      address: "",
-      city: "",
-      department: "",
-      legalRepresentative: "",
-      legalRepresentativeCI: "",
-      bankName: "",
-      bankAccount: "",
-      bankAccountType: "",
-      timbrado: "",
-      establishmentNumber: "",
-      dispatchPoint: "",
-      logoUrl: "",
-      footerText: "",
-    };
+export async function getCompanyConfig(): Promise<CompanyConfigData & { id?: string }> {
+  let config: any = null;
+  try {
+    config = await prisma.companyConfig.findFirst();
+  } catch (err) {
+    console.error("[getCompanyConfig] DB query failed:", err);
+    return EMPTY_CONFIG;
   }
+
+  if (!config) return EMPTY_CONFIG;
 
   const c = config as any; // temporario hasta npx prisma generate
   return {
