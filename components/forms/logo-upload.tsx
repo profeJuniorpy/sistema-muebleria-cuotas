@@ -5,6 +5,9 @@ import { Upload, X, Loader2, ImageIcon } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 
+const MAX_SIZE = 1 * 1024 * 1024; // 1 MB — logo no necesita más
+const ALLOWED = ["image/jpeg", "image/png", "image/webp"];
+
 interface Props {
   value: string | null | undefined;
   onChange: (url: string | null) => void;
@@ -18,27 +21,29 @@ export function LogoUpload({ value, onChange, className }: Props) {
 
   const upload = useCallback(
     async (file: File) => {
+      if (!ALLOWED.includes(file.type)) {
+        toast.error("Formato no permitido. Usá JPG, PNG o WebP.");
+        return;
+      }
+      if (file.size > MAX_SIZE) {
+        toast.error("El logo supera 1 MB. Reducí el tamaño de la imagen.");
+        return;
+      }
+
       setLoading(true);
       try {
-        const form = new FormData();
-        form.append("file", file);
-        form.append("code", "company-logo");
-
-        const res = await fetch("/api/upload/product-image", {
-          method: "POST",
-          body: form,
+        // Convertir a base64 data URL — se guarda directamente en la BD
+        const dataUrl = await new Promise<string>((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onload = (e) => resolve(e.target?.result as string);
+          reader.onerror = reject;
+          reader.readAsDataURL(file);
         });
-        const data = await res.json();
 
-        if (!res.ok) {
-          toast.error(data.error ?? "Error al subir el logo");
-          return;
-        }
-
-        onChange(data.url);
-        toast.success("Logo subido correctamente");
+        onChange(dataUrl);
+        toast.success("Logo cargado. Presioná 'Guardar' para aplicar los cambios.");
       } catch {
-        toast.error("Error de conexión al subir el logo");
+        toast.error("Error al leer el archivo");
       } finally {
         setLoading(false);
       }
@@ -46,15 +51,7 @@ export function LogoUpload({ value, onChange, className }: Props) {
     [onChange]
   );
 
-  async function handleRemove() {
-    if (!value) return;
-    try {
-      await fetch("/api/upload/product-image", {
-        method: "DELETE",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ url: value }),
-      });
-    } catch {}
+  function handleRemove() {
     onChange(null);
   }
 
