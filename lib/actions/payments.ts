@@ -134,7 +134,7 @@ export async function registerPayment(data: z.infer<typeof paymentSchema>) {
       }
 
       return payment;
-    });
+    }, { timeout: 15000 });
 
     revalidatePath("/cobranzas");
     revalidatePath("/clientes");

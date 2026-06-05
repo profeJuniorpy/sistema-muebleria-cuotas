@@ -157,7 +157,7 @@ export async function createSale(data: z.infer<typeof saleSchema>) {
       });
 
       return sale;
-    });
+    }, { timeout: 15000 });
 
     revalidatePath("/ventas");
     revalidatePath("/productos");
