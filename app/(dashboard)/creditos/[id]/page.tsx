@@ -6,6 +6,7 @@ import {
   Calendar,
   CreditCard,
   DollarSign,
+  FileText,
   Percent,
   Phone,
   User,
@@ -123,13 +124,24 @@ export default async function CreditDetailPage({
           </div>
         </div>
 
-        <CreditPayButton
-          saleId={credit.saleId}
-          customerId={credit.customer.id}
-          customers={customers}
-          userId={userId}
-          saleStatus={credit.saleStatus}
-        />
+        <div className="flex items-center gap-2">
+          {credit.pendingBalance > 0 && (
+            <Button
+              variant="outline"
+              className="gap-2"
+              render={<a href={`/api/sales/${credit.saleId}/pagare`} target="_blank" rel="noopener noreferrer" />}
+            >
+              <FileText className="h-4 w-4" /> Pagaré
+            </Button>
+          )}
+          <CreditPayButton
+            saleId={credit.saleId}
+            customerId={credit.customer.id}
+            customers={customers}
+            userId={userId}
+            saleStatus={credit.saleStatus}
+          />
+        </div>
       </div>
 
       {/* 4 summary cards */}

@@ -85,6 +85,15 @@ export default async function SaleDetailsPage({ params }: { params: { id: string
           <Button className="gap-2" render={<a href={`/api/sales/${sale.id}/contract`} target="_blank" rel="noopener noreferrer" />}>
             <FileText className="h-4 w-4" /> Contrato
           </Button>
+          {sale.type === "CREDITO" && sale.creditPlan && (
+            <Button
+              variant="outline"
+              className="gap-2"
+              render={<a href={`/api/sales/${sale.id}/pagare`} target="_blank" rel="noopener noreferrer" />}
+            >
+              <FileText className="h-4 w-4" /> Pagaré
+            </Button>
+          )}
         </div>
       </div>
 

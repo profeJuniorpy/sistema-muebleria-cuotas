@@ -102,3 +102,60 @@ export function calculateAmortization(
 
   return schedule;
 }
+
+export interface InstallmentQuote {
+  installments: number;
+  installmentAmount: number;
+  totalAmount: number;
+  totalInterest: number;
+}
+
+/**
+ * Cotización rápida de cuotas (sin fechas), para simuladores de vitrina
+ * (ej. tienda online). Para FRANCES/SIMPLE la cuota es fija; para
+ * SALDO_DECRECIENTE se informa la primera cuota (la más alta).
+ */
+export function calculateInstallmentQuote(
+  amount: number,
+  annualRate: number,
+  periods: number,
+  mode: InterestMode
+): InstallmentQuote {
+  const balance = new Decimal(amount);
+  const r = new Decimal(annualRate).dividedBy(100);
+
+  let installmentAmount: Decimal;
+  let totalAmount: Decimal;
+
+  if (mode === "FRANCES") {
+    const power = new Decimal(1).plus(r).pow(periods);
+    const denominator = power.minus(1);
+    const numerator = r.times(power);
+    installmentAmount = denominator.isZero()
+      ? balance.dividedBy(periods)
+      : balance.times(numerator.dividedBy(denominator));
+    totalAmount = installmentAmount.times(periods);
+  } else if (mode === "SIMPLE") {
+    const totalInterest = balance.times(r).times(periods);
+    totalAmount = balance.plus(totalInterest);
+    installmentAmount = totalAmount.dividedBy(periods);
+  } else {
+    // SALDO_DECRECIENTE: la primera cuota es la más alta (capital fijo + interés sobre saldo total)
+    const principalPerInst = balance.dividedBy(periods);
+    installmentAmount = principalPerInst.plus(balance.times(r));
+    let runningBalance = balance;
+    let totalInterest = new Decimal(0);
+    for (let i = 0; i < periods; i++) {
+      totalInterest = totalInterest.plus(runningBalance.times(r));
+      runningBalance = runningBalance.minus(principalPerInst);
+    }
+    totalAmount = balance.plus(totalInterest);
+  }
+
+  return {
+    installments: periods,
+    installmentAmount: installmentAmount.toDecimalPlaces(0).toNumber(),
+    totalAmount: totalAmount.toDecimalPlaces(0).toNumber(),
+    totalInterest: totalAmount.minus(balance).toDecimalPlaces(0).toNumber(),
+  };
+}

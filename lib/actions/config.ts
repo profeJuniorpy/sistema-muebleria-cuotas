@@ -174,3 +174,125 @@ export async function saveCommissionSettings(
     return { success: false, error: "Error al guardar configuración de comisiones" };
   }
 }
+
+// ─── Storefront credit (cuotas) settings ──────────────────────────────────────
+
+const storefrontCreditSchema = z.object({
+  interestRate: z.coerce.number().min(0).max(100),
+  interestMode: z.enum(["FRANCES", "SIMPLE", "SALDO_DECRECIENTE"]),
+  installmentOptions: z
+    .string()
+    .min(1, "Ingresá al menos una cantidad de cuotas")
+    .regex(/^\d+(\s*,\s*\d+)*$/, "Usá números separados por coma, ej: 3,6,12,18,24"),
+});
+
+export type StorefrontCreditConfigData = z.infer<typeof storefrontCreditSchema>;
+
+const DEFAULT_STOREFRONT_CREDIT: StorefrontCreditConfigData = {
+  interestRate: 5,
+  interestMode: "FRANCES",
+  installmentOptions: "3,6,12,18,24",
+};
+
+export async function getStorefrontCreditConfig(): Promise<StorefrontCreditConfigData> {
+  try {
+    const s = await prisma.storefrontCreditConfig.findFirst();
+    if (!s) return DEFAULT_STOREFRONT_CREDIT;
+    return {
+      interestRate: Number(s.interestRate),
+      interestMode: s.interestMode,
+      installmentOptions: s.installmentOptions,
+    };
+  } catch (err) {
+    console.error("[getStorefrontCreditConfig] DB query failed:", err);
+    return DEFAULT_STOREFRONT_CREDIT;
+  }
+}
+
+export async function saveStorefrontCreditConfig(data: StorefrontCreditConfigData) {
+  try {
+    const parsed = storefrontCreditSchema.parse(data);
+    const existing = await prisma.storefrontCreditConfig.findFirst();
+    if (existing) {
+      await prisma.storefrontCreditConfig.update({ where: { id: existing.id }, data: parsed });
+    } else {
+      await prisma.storefrontCreditConfig.create({ data: parsed });
+    }
+    revalidatePath("/configuracion");
+    revalidatePath("/tienda");
+    return { success: true };
+  } catch (error: any) {
+    return {
+      success: false,
+      error: error?.issues?.[0]?.message ?? "Error al guardar la configuración de cuotas",
+    };
+  }
+}
+
+// ─── Storefront banner (hero / ofertas) ───────────────────────────────────────
+
+const storefrontBannerSchema = z.object({
+  enabled: z.boolean(),
+  imageUrl: z.string().optional(),
+  title: z.string().optional(),
+  subtitle: z.string().optional(),
+  ctaText: z.string().optional(),
+  ctaLink: z.string().optional(),
+});
+
+export type StorefrontBannerData = z.infer<typeof storefrontBannerSchema>;
+
+const EMPTY_BANNER: StorefrontBannerData = {
+  enabled: false,
+  imageUrl: "",
+  title: "",
+  subtitle: "",
+  ctaText: "",
+  ctaLink: "",
+};
+
+export async function getStorefrontBanner(): Promise<StorefrontBannerData> {
+  try {
+    const b = await prisma.storefrontBanner.findFirst();
+    if (!b) return EMPTY_BANNER;
+    return {
+      enabled: b.enabled,
+      imageUrl: b.imageUrl ?? "",
+      title: b.title ?? "",
+      subtitle: b.subtitle ?? "",
+      ctaText: b.ctaText ?? "",
+      ctaLink: b.ctaLink ?? "",
+    };
+  } catch (err) {
+    console.error("[getStorefrontBanner] DB query failed:", err);
+    return EMPTY_BANNER;
+  }
+}
+
+export async function saveStorefrontBanner(data: StorefrontBannerData) {
+  try {
+    const parsed = storefrontBannerSchema.parse(data);
+    const payload = {
+      enabled: parsed.enabled,
+      imageUrl: parsed.imageUrl || null,
+      title: parsed.title || null,
+      subtitle: parsed.subtitle || null,
+      ctaText: parsed.ctaText || null,
+      ctaLink: parsed.ctaLink || null,
+    };
+    const existing = await prisma.storefrontBanner.findFirst();
+    if (existing) {
+      await prisma.storefrontBanner.update({ where: { id: existing.id }, data: payload });
+    } else {
+      await prisma.storefrontBanner.create({ data: payload });
+    }
+    revalidatePath("/configuracion");
+    revalidatePath("/tienda");
+    return { success: true };
+  } catch (error: any) {
+    return {
+      success: false,
+      error: error?.issues?.[0]?.message ?? "Error al guardar el banner de la tienda",
+    };
+  }
+}

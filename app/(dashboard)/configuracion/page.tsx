@@ -1,5 +1,10 @@
 import { auth } from "@/lib/auth";
-import { getCompanyConfig, getCommissionSettings } from "@/lib/actions/config";
+import {
+  getCompanyConfig,
+  getCommissionSettings,
+  getStorefrontCreditConfig,
+  getStorefrontBanner,
+} from "@/lib/actions/config";
 import ConfigForm from "./config-form";
 
 export const dynamic = "force-dynamic";
@@ -11,11 +16,15 @@ export default async function ConfiguracionPage() {
 
   let company: Awaited<ReturnType<typeof getCompanyConfig>>;
   let commissions: Awaited<ReturnType<typeof getCommissionSettings>>;
+  let storefrontCredit: Awaited<ReturnType<typeof getStorefrontCreditConfig>>;
+  let storefrontBanner: Awaited<ReturnType<typeof getStorefrontBanner>>;
 
   try {
-    [company, commissions] = await Promise.all([
+    [company, commissions, storefrontCredit, storefrontBanner] = await Promise.all([
       getCompanyConfig(),
       getCommissionSettings(),
+      getStorefrontCreditConfig(),
+      getStorefrontBanner(),
     ]);
   } catch (err: any) {
     console.error("[configuracion-page] data fetch failed:", err?.message, err?.stack);
@@ -30,7 +39,13 @@ export default async function ConfiguracionPage() {
           Datos de la empresa, configuración de documentos y parámetros comerciales.
         </p>
       </div>
-      <ConfigForm company={company} commissions={commissions} userId={userId} />
+      <ConfigForm
+        company={company}
+        commissions={commissions}
+        storefrontCredit={storefrontCredit}
+        storefrontBanner={storefrontBanner}
+        userId={userId}
+      />
     </div>
   );
 }

@@ -2,7 +2,7 @@
 
 import { useCallback, useRef, useState } from "react";
 import Image from "next/image";
-import { Upload, X, Loader2, ImageIcon } from "lucide-react";
+import { Upload, X, Loader2, ImageIcon, AlertCircle } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 
@@ -16,11 +16,13 @@ interface Props {
 export function ImageUpload({ value, productCode = "producto", onChange, className }: Props) {
   const [dragging, setDragging] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
   const upload = useCallback(
     async (file: File) => {
       setLoading(true);
+      setError(null);
       try {
         const form = new FormData();
         form.append("file", file);
@@ -33,14 +35,18 @@ export function ImageUpload({ value, productCode = "producto", onChange, classNa
         const data = await res.json();
 
         if (!res.ok) {
-          toast.error(data.error ?? "Error al subir la imagen");
+          const message = data.error ?? "Error al subir la imagen";
+          setError(message);
+          toast.error(message);
           return;
         }
 
         onChange(data.url);
         toast.success("Imagen subida correctamente");
       } catch {
-        toast.error("Error de conexión al subir la imagen");
+        const message = "Error de conexión al subir la imagen";
+        setError(message);
+        toast.error(message);
       } finally {
         setLoading(false);
       }
@@ -57,6 +63,7 @@ export function ImageUpload({ value, productCode = "producto", onChange, classNa
         body: JSON.stringify({ url: value }),
       });
     } catch {}
+    setError(null);
     onChange(null);
   }
 
@@ -144,7 +151,7 @@ export function ImageUpload({ value, productCode = "producto", onChange, classNa
                 {dragging ? "Soltar aquí" : "Subir imagen"}
               </span>
               <span className="text-xs text-zinc-400 text-center px-4">
-                JPG, PNG o WebP · Máximo 3 MB<br />
+                JPG, PNG o WebP · Máximo 5 MB<br />
                 Clic o arrastrá la imagen aquí
               </span>
             </>
@@ -152,10 +159,17 @@ export function ImageUpload({ value, productCode = "producto", onChange, classNa
         </button>
       )}
 
+      {error && (
+        <div className="flex items-start gap-2 rounded-lg bg-red-50 border border-red-200 px-3 py-2 text-xs text-red-700 max-w-xs">
+          <AlertCircle className="h-4 w-4 shrink-0 mt-0.5" />
+          <span>{error}</span>
+        </div>
+      )}
+
       <input
         ref={inputRef}
         type="file"
-        accept="image/jpeg,image/png,image/webp,image/gif"
+        accept="image/jpeg,image/png,image/webp,image/gif,image/heic,image/heif,.heic,.heif"
         className="hidden"
         onChange={handleFileChange}
       />

@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { ArrowRight, Sofa, Tv, Smartphone, BedDouble, Package } from "lucide-react";
 import { getStorefrontProducts, getStorefrontCategories, getCompanyContact } from "@/lib/actions/storefront";
+import { getStorefrontCreditConfig, getStorefrontBanner } from "@/lib/actions/config";
 import { ProductCard } from "@/components/storefront/product-card";
 
 export const dynamic = "force-dynamic";
@@ -22,49 +23,87 @@ const CAT_COLORS: Record<string, string> = {
 };
 
 export default async function TiendaHomePage() {
-  const [{ products: featured }, categories, company] = await Promise.all([
+  const [{ products: featured }, categories, company, creditConfig, banner] = await Promise.all([
     getStorefrontProducts({ limit: 8 }),
     getStorefrontCategories(),
     getCompanyContact(),
+    getStorefrontCreditConfig(),
+    getStorefrontBanner(),
   ]);
+
+  const showBanner = banner.enabled && !!banner.imageUrl;
 
   return (
     <div className="space-y-16 pb-16">
       {/* ── Hero ── */}
-      <section className="relative overflow-hidden bg-zinc-900 text-white">
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_#3f3f46_0%,_#18181b_60%)]" />
-        <div className="relative mx-auto max-w-7xl px-4 sm:px-6 py-24 md:py-32">
-          <div className="max-w-xl space-y-6">
-            <span className="inline-block rounded-full border border-zinc-700 px-4 py-1 text-xs font-medium text-zinc-400 uppercase tracking-widest">
-              {company.name}
-            </span>
-            <h1 className="text-4xl md:text-6xl font-extrabold leading-tight tracking-tight">
-              Amueblá tu hogar con estilo
-            </h1>
-            <p className="text-lg text-zinc-400 leading-relaxed">
-              Muebles, electrodomésticos y más — con opciones de contado y crédito a tu medida.
-            </p>
-            <div className="flex flex-wrap gap-3 pt-2">
-              <Link
-                href="/tienda/catalogo"
-                className="inline-flex items-center gap-2 rounded-xl bg-white px-6 py-3 text-sm font-semibold text-zinc-900 hover:bg-zinc-100 transition-colors"
-              >
-                Ver catálogo <ArrowRight className="h-4 w-4" />
-              </Link>
-              {company.phone && (
-                <a
-                  href={`https://wa.me/${company.phone.replace(/\D/g, "")}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 rounded-xl border border-zinc-700 px-6 py-3 text-sm font-semibold text-zinc-300 hover:border-zinc-500 hover:text-white transition-colors"
+      {showBanner ? (
+        <section className="relative overflow-hidden bg-zinc-900 text-white">
+          <div className="relative w-full aspect-[16/6] min-h-[280px]">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={banner.imageUrl!}
+              alt={banner.title || "Oferta"}
+              className="absolute inset-0 w-full h-full object-cover"
+            />
+            <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/30 to-transparent" />
+            {(banner.title || banner.subtitle || banner.ctaText) && (
+              <div className="absolute inset-0 flex flex-col items-start justify-center px-6 sm:px-12 max-w-2xl gap-3">
+                {banner.title && (
+                  <h1 className="text-3xl md:text-5xl font-extrabold leading-tight tracking-tight drop-shadow-lg">
+                    {banner.title}
+                  </h1>
+                )}
+                {banner.subtitle && (
+                  <p className="text-base md:text-lg text-zinc-100 drop-shadow">{banner.subtitle}</p>
+                )}
+                {banner.ctaText && (
+                  <Link
+                    href={banner.ctaLink || "/tienda/catalogo"}
+                    className="mt-2 inline-flex items-center gap-2 rounded-xl bg-white px-6 py-3 text-sm font-semibold text-zinc-900 hover:bg-zinc-100 transition-colors"
+                  >
+                    {banner.ctaText} <ArrowRight className="h-4 w-4" />
+                  </Link>
+                )}
+              </div>
+            )}
+          </div>
+        </section>
+      ) : (
+        <section className="relative overflow-hidden bg-zinc-900 text-white">
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_#3f3f46_0%,_#18181b_60%)]" />
+          <div className="relative mx-auto max-w-7xl px-4 sm:px-6 py-24 md:py-32">
+            <div className="max-w-xl space-y-6">
+              <span className="inline-block rounded-full border border-zinc-700 px-4 py-1 text-xs font-medium text-zinc-400 uppercase tracking-widest">
+                {company.name}
+              </span>
+              <h1 className="text-4xl md:text-6xl font-extrabold leading-tight tracking-tight">
+                Amueblá tu hogar con estilo
+              </h1>
+              <p className="text-lg text-zinc-400 leading-relaxed">
+                Muebles, electrodomésticos y más — con opciones de contado y crédito a tu medida.
+              </p>
+              <div className="flex flex-wrap gap-3 pt-2">
+                <Link
+                  href="/tienda/catalogo"
+                  className="inline-flex items-center gap-2 rounded-xl bg-white px-6 py-3 text-sm font-semibold text-zinc-900 hover:bg-zinc-100 transition-colors"
                 >
-                  Consultar por WhatsApp
-                </a>
-              )}
+                  Ver catálogo <ArrowRight className="h-4 w-4" />
+                </Link>
+                {company.phone && (
+                  <a
+                    href={`https://wa.me/${company.phone.replace(/\D/g, "")}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-2 rounded-xl border border-zinc-700 px-6 py-3 text-sm font-semibold text-zinc-300 hover:border-zinc-500 hover:text-white transition-colors"
+                  >
+                    Consultar por WhatsApp
+                  </a>
+                )}
+              </div>
             </div>
           </div>
-        </div>
-      </section>
+        </section>
+      )}
 
       {/* ── Categories ── */}
       {categories.length > 0 && (
@@ -104,7 +143,7 @@ export default async function TiendaHomePage() {
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5">
             {featured.map((p) => (
-              <ProductCard key={p.id} product={p} />
+              <ProductCard key={p.id} product={p} creditConfig={creditConfig} />
             ))}
           </div>
         </section>

@@ -74,6 +74,27 @@ model CompanyConfig {
   updatedAt            DateTime @updatedAt
 }
 
+// Simulador de cuotas de la tienda online (estilo Bristol.com.py)
+model StorefrontCreditConfig {
+  id                 String       @id @default(cuid())
+  interestRate       Decimal      @default(5)
+  interestMode       InterestMode @default(FRANCES)
+  installmentOptions String       @default("3,6,12,18,24")
+  updatedAt          DateTime     @updatedAt
+}
+
+// Banner principal (hero) de la tienda online, editable desde Configuración
+model StorefrontBanner {
+  id        String   @id @default(cuid())
+  enabled   Boolean  @default(false)
+  imageUrl  String?
+  title     String?
+  subtitle  String?
+  ctaText   String?
+  ctaLink   String?
+  updatedAt DateTime @updatedAt
+}
+
 model User {
   id                  String               @id @default(cuid())
   name                String?
@@ -102,6 +123,7 @@ model User {
   cashesClosed        CashRegister[]       @relation("CashCloser")
   cashWithdrawals     CashWithdrawal[]     @relation("CashWithdrawer")
   cashCounts          CashCount[]          @relation("CashCounter")
+  registeredCheques   Cheque[]             @relation("ChequeRegisteredBy")
 }
 
 model Supplier {
@@ -120,6 +142,7 @@ model Supplier {
   products     Product[]
   purchases    Purchase[]
   payments     SupplierPayment[]
+  cheques      Cheque[]
 }
 
 model Product {
@@ -196,6 +219,7 @@ model Customer {
   payments        Payment[]
   sales           Sale[]
   notifications   NotificationLog[]
+  cheques         Cheque[]
 }
 
 model Sale {
@@ -566,6 +590,44 @@ model CashCount {
   createdAt      DateTime     @default(now())
   cashRegister   CashRegister @relation(fields: [cashRegisterId], references: [id])
   user           User         @relation("CashCounter", fields: [userId], references: [id])
+}
+
+// Control de emisión (pago a proveedores/terceros) y recepción (cobro a clientes) de cheques
+model Cheque {
+  id            String       @id @default(cuid())
+  number        String
+  type          ChequeType
+  bankName      String
+  amount        Decimal
+  issueDate     DateTime
+  dueDate       DateTime
+  status        ChequeStatus @default(PENDIENTE)
+  // Si type=EMITIDO: beneficiario a quien se le paga. Si type=RECIBIDO: librador que lo entregó.
+  partyName     String
+  partyDocument String?
+  concept       String?
+  customerId    String?
+  supplierId    String?
+  clearedAt     DateTime?
+  notes         String?
+  registeredBy  String
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+  customer      Customer?    @relation(fields: [customerId], references: [id])
+  supplier      Supplier?    @relation(fields: [supplierId], references: [id])
+  registrar     User         @relation("ChequeRegisteredBy", fields: [registeredBy], references: [id])
+}
+
+enum ChequeType {
+  EMITIDO
+  RECIBIDO
+}
+
+enum ChequeStatus {
+  PENDIENTE
+  COBRADO
+  RECHAZADO
+  ANULADO
 }
 
 model NotificationLog {

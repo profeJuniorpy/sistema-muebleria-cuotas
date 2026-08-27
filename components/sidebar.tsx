@@ -21,6 +21,7 @@ import {
   Truck,
   Wallet,
   Bell,
+  Banknote,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -85,6 +86,12 @@ export default function Sidebar({ role, logoUrl, companyName }: SidebarProps) {
       label: "Caja",
       icon: Wallet,
       href: "/caja",
+      roles: ["ADMIN", "CAJERO", "SUPERVISOR"],
+    },
+    {
+      label: "Cheques",
+      icon: Banknote,
+      href: "/cheques",
       roles: ["ADMIN", "CAJERO", "SUPERVISOR"],
     },
     {

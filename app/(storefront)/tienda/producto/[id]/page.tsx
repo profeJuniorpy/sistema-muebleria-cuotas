@@ -3,7 +3,9 @@ import Image from "next/image";
 import Link from "next/link";
 import { ChevronRight, CheckCircle, XCircle, ShoppingCart } from "lucide-react";
 import { getStorefrontProductDetail, getStorefrontProducts, getCompanyContact } from "@/lib/actions/storefront";
+import { getStorefrontCreditConfig } from "@/lib/actions/config";
 import { ProductCard } from "@/components/storefront/product-card";
+import { InstallmentCalculator } from "@/components/storefront/installment-calculator";
 import { AddToCartButton } from "./add-to-cart-button";
 
 export const dynamic = "force-dynamic";
@@ -20,12 +22,18 @@ export default async function ProductoDetailPage({
 }: {
   params: { id: string };
 }) {
-  const [product, company] = await Promise.all([
+  const [product, company, creditConfig] = await Promise.all([
     getStorefrontProductDetail(params.id),
     getCompanyContact(),
+    getStorefrontCreditConfig(),
   ]);
 
   if (!product) notFound();
+
+  const installmentOptions = creditConfig.installmentOptions
+    .split(",")
+    .map((v) => parseInt(v.trim(), 10))
+    .filter((n) => Number.isFinite(n) && n > 0);
 
   // Related: same category, different product
   const { products: related } = await getStorefrontProducts({
@@ -106,6 +114,16 @@ export default async function ProductoDetailPage({
               </div>
             )}
           </div>
+
+          {/* Simulador de cuotas */}
+          {product.creditPrice > 0 && (
+            <InstallmentCalculator
+              amount={product.creditPrice}
+              interestRate={creditConfig.interestRate}
+              interestMode={creditConfig.interestMode}
+              installmentOptions={installmentOptions}
+            />
+          )}
 
           {/* Stock */}
           <div className="flex items-center gap-2">
@@ -189,7 +207,7 @@ export default async function ProductoDetailPage({
           </h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5">
             {relatedFiltered.map((p) => (
-              <ProductCard key={p.id} product={p} />
+              <ProductCard key={p.id} product={p} creditConfig={creditConfig} />
             ))}
           </div>
         </section>

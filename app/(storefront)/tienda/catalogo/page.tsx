@@ -1,5 +1,6 @@
 import { Suspense } from "react";
 import { getStorefrontProducts, getStorefrontCategories } from "@/lib/actions/storefront";
+import { getStorefrontCreditConfig } from "@/lib/actions/config";
 import { ProductCard } from "@/components/storefront/product-card";
 import { CategoryBadge } from "@/components/storefront/category-badge";
 import { ChevronLeft, ChevronRight, SearchX } from "lucide-react";
@@ -22,9 +23,10 @@ export default async function CatalogoPage({
   const category = searchParams.category;
   const search = searchParams.search;
 
-  const [{ products, total, totalPages }, categories] = await Promise.all([
+  const [{ products, total, totalPages }, categories, creditConfig] = await Promise.all([
     getStorefrontProducts({ category, search, page, limit: 12 }),
     getStorefrontCategories(),
+    getStorefrontCreditConfig(),
   ]);
 
   function buildPageUrl(p: number) {
@@ -80,7 +82,7 @@ export default async function CatalogoPage({
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5">
           {products.map((p) => (
-            <ProductCard key={p.id} product={p} />
+            <ProductCard key={p.id} product={p} creditConfig={creditConfig} />
           ))}
         </div>
       )}

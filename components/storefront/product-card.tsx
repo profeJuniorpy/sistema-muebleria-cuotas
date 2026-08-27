@@ -5,6 +5,8 @@ import Link from "next/link";
 import { ShoppingCart, Check } from "lucide-react";
 import { useCart } from "./cart-context";
 import { cn } from "@/lib/utils";
+import { calculateInstallmentQuote } from "@/lib/calculations";
+import type { InterestMode } from "@prisma/client";
 
 interface Props {
   product: {
@@ -19,6 +21,12 @@ interface Props {
     imageUrl: string | null;
     description: string | null;
   };
+  /** Config del simulador de cuotas — si se pasa, muestra "Desde Gs. X en N cuotas" */
+  creditConfig?: {
+    interestRate: number;
+    interestMode: InterestMode;
+    installmentOptions: string;
+  };
 }
 
 const fmt = (n: number) =>
@@ -28,9 +36,25 @@ const fmt = (n: number) =>
     maximumFractionDigits: 0,
   }).format(n);
 
-export function ProductCard({ product }: Props) {
+export function ProductCard({ product, creditConfig }: Props) {
   const { addItem, isInCart } = useCart();
   const inCart = isInCart(product.id);
+
+  const bestInstallmentQuote = (() => {
+    if (!creditConfig || product.creditPrice <= 0) return null;
+    const periodsList = creditConfig.installmentOptions
+      .split(",")
+      .map((v) => parseInt(v.trim(), 10))
+      .filter((n) => Number.isFinite(n) && n > 0);
+    if (periodsList.length === 0) return null;
+    const maxPeriods = Math.max(...periodsList);
+    return calculateInstallmentQuote(
+      product.creditPrice,
+      creditConfig.interestRate,
+      maxPeriods,
+      creditConfig.interestMode
+    );
+  })();
 
   return (
     <div className="group flex flex-col rounded-2xl border border-zinc-200 bg-white overflow-hidden shadow-sm hover:shadow-md transition-shadow">
@@ -79,6 +103,11 @@ export function ProductCard({ product }: Props) {
           {product.creditPrice > 0 && product.creditPrice !== product.cashPrice && (
             <p className="text-xs text-zinc-500">
               Crédito: {fmt(product.creditPrice)}
+            </p>
+          )}
+          {bestInstallmentQuote && (
+            <p className="text-xs font-semibold text-emerald-700">
+              {bestInstallmentQuote.installments}x de {fmt(bestInstallmentQuote.installmentAmount)}
             </p>
           )}
         </div>
