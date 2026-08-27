@@ -79,7 +79,7 @@ export default async function SaleDetailsPage({ params }: { params: { id: string
           </div>
         </div>
         <div className="flex items-center gap-2">
-          <Button variant="outline" className="gap-2" render={<a href={`/api/sales/${sale.id}/receipt`} target="_blank" rel="noopener noreferrer" />}>
+          <Button variant="outline" className="gap-2" render={<a href={`/rpt/venta/${sale.id}`} target="_blank" rel="noopener noreferrer" />}>
             <Printer className="h-4 w-4" /> Imprimir Recibo
           </Button>
           <Button className="gap-2" render={<a href={`/api/sales/${sale.id}/contract`} target="_blank" rel="noopener noreferrer" />}>

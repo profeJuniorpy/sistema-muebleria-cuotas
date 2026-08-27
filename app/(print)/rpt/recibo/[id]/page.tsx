@@ -49,7 +49,7 @@ export default async function ReceiptTicketPage({
         collector: { select: { name: true } },
       },
     }),
-    prisma.companyConfig.findFirst(),
+    prisma.companyConfig.findFirst({ orderBy: { updatedAt: "desc" } }),
   ]);
 
   if (!payment) notFound();

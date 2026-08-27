@@ -50,7 +50,7 @@ const EMPTY_CONFIG = {
 export async function getCompanyConfig(): Promise<CompanyConfigData & { id?: string }> {
   let config: any = null;
   try {
-    config = await prisma.companyConfig.findFirst();
+    config = await prisma.companyConfig.findFirst({ orderBy: { updatedAt: "desc" } });
   } catch (err) {
     console.error("[getCompanyConfig] DB query failed:", err);
     return EMPTY_CONFIG;
@@ -87,7 +87,7 @@ export async function getCompanyConfig(): Promise<CompanyConfigData & { id?: str
 
 export async function saveCompanyConfig(data: CompanyConfigData) {
   try {
-    const existing = await prisma.companyConfig.findFirst();
+    const existing = await prisma.companyConfig.findFirst({ orderBy: { updatedAt: "desc" } });
 
     const payload = {
       name: data.name,

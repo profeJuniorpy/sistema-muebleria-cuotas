@@ -64,7 +64,7 @@ export default async function ProductoDetailPage({
               src={product.imageUrl}
               alt={product.name}
               fill
-              className="object-cover"
+              className="object-contain"
               sizes="(max-width: 768px) 100vw, 50vw"
               priority
             />

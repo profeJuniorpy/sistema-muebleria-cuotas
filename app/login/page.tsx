@@ -11,7 +11,7 @@ export const dynamic = "force-dynamic";
 
 async function getCompanyBranding() {
   try {
-    const c = await prisma.companyConfig.findFirst();
+    const c = await prisma.companyConfig.findFirst({ orderBy: { updatedAt: "desc" } });
     return { name: c?.name ?? null, logoUrl: c?.logoUrl ?? null };
   } catch (err) {
     console.error("[LoginPage] company fetch failed:", err);

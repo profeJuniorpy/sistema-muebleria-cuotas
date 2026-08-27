@@ -25,7 +25,7 @@ export default async function PrintVentasPage({
 
   const [report, company] = await Promise.all([
     getSalesReport(from, to),
-    prisma.companyConfig.findFirst(),
+    prisma.companyConfig.findFirst({ orderBy: { updatedAt: "desc" } }),
   ]);
 
   const thStyle = {

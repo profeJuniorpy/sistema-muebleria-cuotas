@@ -52,7 +52,7 @@ export default async function ReciboProveedorPage({
         user: { select: { name: true } },
       },
     }),
-    prisma.companyConfig.findFirst(),
+    prisma.companyConfig.findFirst({ orderBy: { updatedAt: "desc" } }),
   ]);
 
   if (!payment) notFound();

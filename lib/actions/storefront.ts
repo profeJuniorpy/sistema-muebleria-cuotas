@@ -147,7 +147,7 @@ export async function getStorefrontCategories() {
 // ─── Company contact ──────────────────────────────────────────────────────────
 
 export async function getCompanyContact() {
-  const config = await prisma.companyConfig.findFirst() as any;
+  const config = await prisma.companyConfig.findFirst({ orderBy: { updatedAt: "desc" } }) as any;
 
   return {
     name: config?.name ?? "Mueblería",

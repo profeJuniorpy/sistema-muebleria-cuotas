@@ -27,7 +27,7 @@ export async function GET(
           },
         },
       }),
-      prisma.companyConfig.findFirst(),
+      prisma.companyConfig.findFirst({ orderBy: { updatedAt: "desc" } }),
     ]);
 
     if (!sale || !sale.creditPlan) {

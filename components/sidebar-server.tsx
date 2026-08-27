@@ -10,7 +10,7 @@ export default async function SidebarServer({ role }: Props) {
   let companyName: string | null = null;
 
   try {
-    const c = await prisma.companyConfig.findFirst() as any;
+    const c = await prisma.companyConfig.findFirst({ orderBy: { updatedAt: "desc" } }) as any;
     logoUrl = c?.logoUrl ?? null;
     companyName = c?.name ?? null;
   } catch (err) {

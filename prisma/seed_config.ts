@@ -3,7 +3,7 @@ import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
 
 async function main() {
-  const config = await prisma.companyConfig.findFirst();
+  const config = await prisma.companyConfig.findFirst({ orderBy: { updatedAt: "desc" } });
   if (!config) {
     await prisma.companyConfig.create({
       data: {

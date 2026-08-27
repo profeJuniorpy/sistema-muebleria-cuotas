@@ -89,7 +89,7 @@ export function ImageUpload({ value, productCode = "producto", onChange, classNa
             src={value}
             alt="Imagen del producto"
             fill
-            className="object-cover"
+            className="object-contain"
             sizes="320px"
           />
           <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-colors flex items-center justify-center gap-3 opacity-0 group-hover:opacity-100">

@@ -14,7 +14,7 @@ function fmt(n: number) {
 export default async function PrintMorosidadPage() {
   const [report, company] = await Promise.all([
     getDelinquencyReport(),
-    prisma.companyConfig.findFirst(),
+    prisma.companyConfig.findFirst({ orderBy: { updatedAt: "desc" } }),
   ]);
 
   const generatedDate = format(new Date(), "dd 'de' MMMM 'de' yyyy", { locale: es });
