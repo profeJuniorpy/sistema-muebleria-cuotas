@@ -23,6 +23,12 @@ export function PrintHeader({ company, title, subtitle, period }: PrintHeaderPro
 
   return (
     <>
+      <style>{`
+        @media print {
+          @page { size: A4 portrait; margin: 15mm; }
+        }
+      `}</style>
+
       {/* Company info */}
       <div style={{ borderBottom: "3px solid #1a3a8c", paddingBottom: "12px", marginBottom: "16px" }}>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>

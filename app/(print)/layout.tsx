@@ -3,9 +3,12 @@ export default function PrintLayout({ children }: { children: React.ReactNode })
     <>
       <style>{`
         @media print {
-          @page { margin: 15mm; size: A4 portrait; }
           .no-print { display: none !important; }
-          body { background: white !important; }
+          html, body {
+            background: white !important;
+            height: auto !important;
+            min-height: 0 !important;
+          }
           table { width: 100%; border-collapse: collapse; break-inside: auto; }
           thead { display: table-header-group; }
           tr { break-inside: avoid; page-break-inside: avoid; }

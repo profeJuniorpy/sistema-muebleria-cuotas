@@ -70,7 +70,7 @@ export default async function VentaTicketPage({
       <style>{`
         @media print {
           @page { size: 58mm auto; margin: 3mm 2mm; }
-          body { background: white !important; }
+          html, body { background: white !important; height: auto !important; min-height: 0 !important; }
           .print-container {
             padding: 0 !important;
             max-width: 100% !important;
@@ -78,7 +78,7 @@ export default async function VentaTicketPage({
             background: white !important;
             min-height: unset !important;
           }
-          .ticket-wrap { border: none !important; padding: 0 !important; margin: 0 !important; }
+          .ticket-wrap { border: none !important; padding: 0 !important; margin: 0 !important; page-break-after: avoid !important; page-break-inside: avoid !important; }
           .no-print { display: none !important; }
         }
         @media screen {
@@ -96,7 +96,7 @@ export default async function VentaTicketPage({
 
       <div
         className="ticket-wrap"
-        style={{ fontFamily: "'Courier New', Courier, monospace", fontSize: "9pt", lineHeight: 1.5, color: "#000" }}
+        style={{ fontFamily: "'Courier New', Courier, monospace", fontSize: "11.5pt", lineHeight: 1.5, color: "#000" }}
       >
         {/* Encabezado empresa */}
         <div style={{ textAlign: "center", marginBottom: "6px" }}>
@@ -104,17 +104,17 @@ export default async function VentaTicketPage({
             // eslint-disable-next-line @next/next/no-img-element
             <img src={company.logoUrl} alt="Logo" style={{ width: 48, height: 48, objectFit: "contain", borderRadius: "50%", margin: "0 auto 4px", display: "block", border: "1px solid #1a3a8c" }} />
           )}
-          <div style={{ fontWeight: 700, fontSize: "11pt", textTransform: "uppercase", color: "#1a3a8c" }}>
+          <div style={{ fontWeight: 700, fontSize: "14pt", textTransform: "uppercase", color: "#1a3a8c" }}>
             {company?.name ?? "MUEBLERÍA ERP"}
           </div>
-          {company?.ruc && <div style={{ fontSize: "8pt" }}>RUC: {company.ruc}</div>}
-          {company?.address && <div style={{ fontSize: "8pt" }}>{company.address}</div>}
-          {company?.phone && <div style={{ fontSize: "8pt" }}>Tel: {company.phone}</div>}
+          {company?.ruc && <div style={{ fontSize: "10pt" }}>RUC: {company.ruc}</div>}
+          {company?.address && <div style={{ fontSize: "10pt" }}>{company.address}</div>}
+          {company?.phone && <div style={{ fontSize: "10pt" }}>Tel: {company.phone}</div>}
         </div>
 
         <Divider char="=" />
 
-        <div style={{ textAlign: "center", fontWeight: 700, fontSize: "10pt", margin: "4px 0" }}>
+        <div style={{ textAlign: "center", fontWeight: 700, fontSize: "12.5pt", margin: "4px 0" }}>
           COMPROBANTE DE VENTA
         </div>
 
@@ -128,11 +128,11 @@ export default async function VentaTicketPage({
         <Divider />
 
         {/* Cliente */}
-        <div style={{ fontSize: "8pt", marginBottom: "2px", color: "#555" }}>CLIENTE</div>
+        <div style={{ fontSize: "10pt", marginBottom: "2px", color: "#555" }}>CLIENTE</div>
         <div style={{ fontWeight: 600 }}>{sale.customer.name}</div>
-        <div style={{ fontSize: "8pt" }}>CI/RUC: {sale.customer.ruc}</div>
+        <div style={{ fontSize: "10pt" }}>CI/RUC: {sale.customer.ruc}</div>
         {(sale.customer.mobile ?? sale.customer.phone) && (
-          <div style={{ fontSize: "8pt" }}>
+          <div style={{ fontSize: "10pt" }}>
             Tel: {sale.customer.mobile ?? sale.customer.phone}
           </div>
         )}
@@ -140,11 +140,11 @@ export default async function VentaTicketPage({
         <Divider />
 
         {/* Artículos */}
-        <div style={{ fontSize: "8pt", marginBottom: "2px", color: "#555" }}>ARTÍCULOS</div>
+        <div style={{ fontSize: "10pt", marginBottom: "2px", color: "#555" }}>ARTÍCULOS</div>
         {sale.items.map((item) => (
           <div key={item.id} style={{ margin: "3px 0" }}>
             <div>{item.quantity} x {item.productName}</div>
-            <div style={{ display: "flex", justifyContent: "space-between", fontSize: "8pt", color: "#555" }}>
+            <div style={{ display: "flex", justifyContent: "space-between", fontSize: "10pt", color: "#555" }}>
               <span>{fmt(Number(item.unitPrice))} c/u</span>
               <span style={{ fontWeight: 600, color: "#000" }}>{fmt(Number(item.subtotal))} GS</span>
             </div>
@@ -160,8 +160,8 @@ export default async function VentaTicketPage({
 
         <Divider char="=" />
 
-        <div style={{ textAlign: "center", padding: "4px 0", fontWeight: 700, fontSize: "11pt" }}>
-          <div style={{ fontSize: "8pt", fontWeight: 400 }}>TOTAL VENTA</div>
+        <div style={{ textAlign: "center", padding: "4px 0", fontWeight: 700, fontSize: "14pt" }}>
+          <div style={{ fontSize: "10pt", fontWeight: 400 }}>TOTAL VENTA</div>
           {fmt(Number(sale.total))} GS
         </div>
 
@@ -177,7 +177,7 @@ export default async function VentaTicketPage({
           </>
         ) : plan ? (
           <>
-            <div style={{ fontSize: "8pt", marginBottom: "2px", color: "#555" }}>PLAN DE CRÉDITO</div>
+            <div style={{ fontSize: "10pt", marginBottom: "2px", color: "#555" }}>PLAN DE CRÉDITO</div>
             <Line label="Entrega inicial:" value={`${fmt(Number(plan.downPayment))} GS`} />
             <Line label="Monto financiado:" value={`${fmt(Number(plan.financedAmount))} GS`} />
             <Line label="Cuotas:" value={`${plan.installments} x ${fmt(Number(plan.installmentAmount))} GS`} />
@@ -190,7 +190,7 @@ export default async function VentaTicketPage({
         <div style={{ textAlign: "center", fontWeight: 700, margin: "4px 0" }}>
           ¡Gracias por su compra!
         </div>
-        <div style={{ textAlign: "center", fontSize: "7pt", color: "#555", marginTop: "2px" }}>
+        <div style={{ textAlign: "center", fontSize: "9pt", color: "#555", marginTop: "2px" }}>
           Documento generado por sistema ERP
         </div>
       </div>

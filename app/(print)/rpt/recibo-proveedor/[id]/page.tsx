@@ -72,7 +72,7 @@ export default async function ReciboProveedorPage({
             size: 58mm auto;
             margin: 3mm 2mm;
           }
-          body { background: white !important; }
+          html, body { background: white !important; height: auto !important; min-height: 0 !important; }
           .print-container {
             padding: 0 !important;
             max-width: 100% !important;
@@ -80,7 +80,7 @@ export default async function ReciboProveedorPage({
             background: white !important;
             min-height: unset !important;
           }
-          .ticket-wrap { border: none !important; padding: 0 !important; margin: 0 !important; }
+          .ticket-wrap { border: none !important; padding: 0 !important; margin: 0 !important; page-break-after: avoid !important; page-break-inside: avoid !important; }
           .no-print { display: none !important; }
         }
         @media screen {
@@ -101,7 +101,7 @@ export default async function ReciboProveedorPage({
         className="ticket-wrap"
         style={{
           fontFamily: "'Courier New', Courier, monospace",
-          fontSize: "9pt",
+          fontSize: "11.5pt",
           lineHeight: 1.5,
           color: "#000",
         }}
@@ -112,20 +112,20 @@ export default async function ReciboProveedorPage({
             // eslint-disable-next-line @next/next/no-img-element
             <img src={company.logoUrl} alt="Logo" style={{ width: 48, height: 48, objectFit: "contain", borderRadius: "50%", margin: "0 auto 4px", display: "block", border: "1px solid #1a3a8c" }} />
           )}
-          <div style={{ fontWeight: 700, fontSize: "11pt", textTransform: "uppercase", color: "#1a3a8c" }}>
+          <div style={{ fontWeight: 700, fontSize: "14pt", textTransform: "uppercase", color: "#1a3a8c" }}>
             {company?.name ?? "MUEBLERÍA ERP"}
           </div>
-          {company?.ruc && <div style={{ fontSize: "8pt" }}>RUC: {company.ruc}</div>}
-          {company?.address && <div style={{ fontSize: "8pt" }}>{company.address}</div>}
-          {company?.phone && <div style={{ fontSize: "8pt" }}>Tel: {company.phone}</div>}
+          {company?.ruc && <div style={{ fontSize: "10pt" }}>RUC: {company.ruc}</div>}
+          {company?.address && <div style={{ fontSize: "10pt" }}>{company.address}</div>}
+          {company?.phone && <div style={{ fontSize: "10pt" }}>Tel: {company.phone}</div>}
         </div>
 
         <Divider char="=" />
 
-        <div style={{ textAlign: "center", fontWeight: 700, fontSize: "10pt", margin: "4px 0" }}>
+        <div style={{ textAlign: "center", fontWeight: 700, fontSize: "12.5pt", margin: "4px 0" }}>
           COMPROBANTE DE PAGO
         </div>
-        <div style={{ textAlign: "center", fontSize: "8pt", color: "#555", marginBottom: "4px" }}>
+        <div style={{ textAlign: "center", fontSize: "10pt", color: "#555", marginBottom: "4px" }}>
           PAGO A PROVEEDOR
         </div>
 
@@ -137,13 +137,13 @@ export default async function ReciboProveedorPage({
 
         <Divider />
 
-        <div style={{ fontSize: "8pt", marginBottom: "2px", color: "#555" }}>PROVEEDOR</div>
+        <div style={{ fontSize: "10pt", marginBottom: "2px", color: "#555" }}>PROVEEDOR</div>
         <div style={{ fontWeight: 600 }}>{payment.supplier.name}</div>
         {payment.supplier.ruc && (
-          <div style={{ fontSize: "8pt" }}>RUC: {payment.supplier.ruc}</div>
+          <div style={{ fontSize: "10pt" }}>RUC: {payment.supplier.ruc}</div>
         )}
         {payment.supplier.phone && (
-          <div style={{ fontSize: "8pt" }}>Tel: {payment.supplier.phone}</div>
+          <div style={{ fontSize: "10pt" }}>Tel: {payment.supplier.phone}</div>
         )}
 
         <Divider />
@@ -153,13 +153,13 @@ export default async function ReciboProveedorPage({
 
         <Divider />
 
-        <div style={{ fontSize: "8pt", marginBottom: "2px", color: "#555" }}>DETALLE PAGO</div>
+        <div style={{ fontSize: "10pt", marginBottom: "2px", color: "#555" }}>DETALLE PAGO</div>
         <Line
           label="Método:"
           value={METHOD_LABEL[payment.paymentMethod] ?? payment.paymentMethod}
         />
         {payment.notes && (
-          <div style={{ fontSize: "8pt", marginBottom: "2px" }}>Obs: {payment.notes}</div>
+          <div style={{ fontSize: "10pt", marginBottom: "2px" }}>Obs: {payment.notes}</div>
         )}
 
         <Divider char="=" />
@@ -169,16 +169,16 @@ export default async function ReciboProveedorPage({
             textAlign: "center",
             padding: "4px 0",
             fontWeight: 700,
-            fontSize: "11pt",
+            fontSize: "14pt",
           }}
         >
-          <div style={{ fontSize: "8pt", fontWeight: 400 }}>TOTAL PAGADO</div>
+          <div style={{ fontSize: "10pt", fontWeight: 400 }}>TOTAL PAGADO</div>
           {fmt(amount)} GS
         </div>
 
         <Divider char="=" />
 
-        <div style={{ textAlign: "center", fontSize: "8pt", margin: "4px 0" }}>
+        <div style={{ textAlign: "center", fontSize: "10pt", margin: "4px 0" }}>
           Registrado por: <strong>{payment.user?.name ?? "—"}</strong>
         </div>
 
@@ -187,7 +187,7 @@ export default async function ReciboProveedorPage({
         <div style={{ textAlign: "center", fontWeight: 700, margin: "4px 0" }}>
           Comprobante de Pago
         </div>
-        <div style={{ textAlign: "center", fontSize: "7pt", color: "#555", marginTop: "2px" }}>
+        <div style={{ textAlign: "center", fontSize: "9pt", color: "#555", marginTop: "2px" }}>
           Documento generado por sistema ERP
         </div>
       </div>
