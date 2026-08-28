@@ -45,7 +45,13 @@ export default async function ReceiptTicketPage({
       where: { id: params.id },
       include: {
         customer: { select: { name: true, ruc: true, mobile: true, phone: true } },
-        sale: { select: { number: true, type: true } },
+        sale: {
+          select: {
+            number: true,
+            type: true,
+            items: { select: { productName: true, quantity: true } },
+          },
+        },
         collector: { select: { name: true } },
       },
     }),
@@ -83,18 +89,24 @@ export default async function ReceiptTicketPage({
     },
   });
 
-  // ── Saldo restante después de este pago ─────────────────────────────────────
-  const remainingRows = await prisma.amortizationSchedule.findMany({
-    where: {
-      creditPlan: { saleId: payment.saleId },
-      status: { in: ["PENDIENTE", "VENCIDA", "PARCIAL"] },
-    },
-    select: { total: true, paidAmount: true },
-  });
+  // ── Saldo restante y cuotas pendientes después de este pago ─────────────────
+  const [remainingRows, totalInstallments] = await Promise.all([
+    prisma.amortizationSchedule.findMany({
+      where: {
+        creditPlan: { saleId: payment.saleId },
+        status: { in: ["PENDIENTE", "VENCIDA", "PARCIAL"] },
+      },
+      select: { total: true, paidAmount: true },
+    }),
+    prisma.amortizationSchedule.count({
+      where: { creditPlan: { saleId: payment.saleId } },
+    }),
+  ]);
   const remainingBalance = remainingRows.reduce(
     (sum, i) => sum + Number(i.total) - Number(i.paidAmount),
     0
   );
+  const pendingCount = remainingRows.length;
 
   // ── Máximo atraso entre las cuotas pagadas ──────────────────────────────────
   let maxDaysLate = 0;
@@ -185,13 +197,34 @@ export default async function ReceiptTicketPage({
 
         <Divider />
 
+        {/* Artículos / concepto */}
+        {payment.sale.items.length > 0 && (
+          <>
+            <div style={{ fontSize: "8pt", marginBottom: "2px", color: "#555" }}>
+              CONCEPTO / ARTÍCULOS
+            </div>
+            {payment.sale.items.map((item, idx) => (
+              <div key={idx} style={{ fontSize: "8pt" }}>
+                {item.quantity} x {item.productName}
+              </div>
+            ))}
+            <Divider />
+          </>
+        )}
+
         {/* Venta */}
         <Line label="VENTA N°:" value={payment.sale.number} />
         <Line label="TIPO:" value={payment.sale.type} />
 
-        {/* Cuotas pagadas */}
+        {/* Cuotas pagadas / pendientes */}
         {cuotasLabel && (
-          <Line label="CUOTAS:" value={cuotasLabel} />
+          <Line label="CUOTA(S) PAGADA(S):" value={cuotasLabel} />
+        )}
+        {payment.sale.type === "CREDITO" && totalInstallments > 0 && (
+          <Line
+            label="CUOTAS PENDIENTES:"
+            value={`${pendingCount} de ${totalInstallments}`}
+          />
         )}
 
         <Divider />
