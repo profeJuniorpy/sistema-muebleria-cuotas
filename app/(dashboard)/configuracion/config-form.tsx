@@ -10,6 +10,8 @@ import {
   Building2,
   Calculator,
   CreditCard,
+  DatabaseBackup,
+  Download,
   FileText,
   Image as ImageIcon,
   Landmark,
@@ -298,6 +300,9 @@ export default function ConfigForm({ company, commissions, storefrontCredit, sto
           </TabsTrigger>
           <TabsTrigger value="banner-tienda" className="gap-2">
             <ImageIcon className="h-4 w-4" /> Banner (Tienda)
+          </TabsTrigger>
+          <TabsTrigger value="backup" className="gap-2">
+            <DatabaseBackup className="h-4 w-4" /> Backup
           </TabsTrigger>
         </TabsList>
       </div>
@@ -1066,6 +1071,47 @@ export default function ConfigForm({ company, commissions, storefrontCredit, sto
             </div>
           </form>
         </Form>
+      </TabsContent>
+
+      {/* ── Tab: Backup ── */}
+      <TabsContent value="backup">
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-base">
+              <DatabaseBackup className="h-4 w-4" /> Backup de la Base de Datos
+            </CardTitle>
+            <CardDescription>
+              Copia completa de los datos del sistema (clientes, ventas, créditos, pagos,
+              productos, cheques, etc.) en formato JSON.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            <div className="rounded-xl border border-blue-100 bg-blue-50/50 p-4 text-sm space-y-2">
+              <p className="font-medium text-blue-900">Backup automático diario configurado</p>
+              <p className="text-blue-800">
+                Un script programado en esta computadora descarga y guarda una copia de la base
+                de datos todos los días, en la carpeta configurada localmente. Consultá con quien
+                configuró el sistema para conocer la ubicación exacta o para configurarlo en otra
+                computadora.
+              </p>
+            </div>
+
+            <div>
+              <p className="text-sm font-medium mb-2">Backup manual</p>
+              <p className="text-xs text-muted-foreground mb-3">
+                Descarga inmediata de todos los datos actuales. El archivo contiene información
+                sensible del negocio — guardalo en un lugar seguro.
+              </p>
+              <Button
+                type="button"
+                className="gap-2"
+                render={<a href="/api/backup" target="_blank" rel="noopener noreferrer" />}
+              >
+                <Download className="h-4 w-4" /> Descargar Backup Ahora
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
       </TabsContent>
     </Tabs>
   );
