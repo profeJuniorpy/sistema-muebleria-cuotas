@@ -355,7 +355,7 @@ export function ReportesView({
 
       {/* Tabs */}
       <Tabs defaultValue="ventas">
-        <div className="sticky top-0 z-10 -mx-4 md:-mx-8 px-4 md:px-8 py-2 mb-2 bg-background border-b">
+        <div className="sticky top-0 z-10 py-2 mb-2 bg-background border-b">
           <TabsList>
             <TabsTrigger value="ganancias" className="gap-1.5">
               <DollarSign className="h-3.5 w-3.5" /> Ganancias

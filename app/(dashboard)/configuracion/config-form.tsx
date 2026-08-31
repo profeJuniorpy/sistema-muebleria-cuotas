@@ -285,7 +285,7 @@ export default function ConfigForm({ company, commissions, storefrontCredit, sto
 
   return (
     <Tabs defaultValue="empresa">
-      <div className="sticky top-0 z-10 -mx-4 md:-mx-8 px-4 md:px-8 py-2 mb-6 bg-background border-b">
+      <div className="sticky top-0 z-10 py-2 mb-6 bg-background border-b">
         <TabsList>
           <TabsTrigger value="empresa" className="gap-2">
             <Building2 className="h-4 w-4" /> Empresa
