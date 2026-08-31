@@ -221,17 +221,19 @@ export function CobranzasView({
 
       {/* ── Tabs ── */}
       <Tabs defaultValue="cuotas">
-        <TabsList>
-          <TabsTrigger value="cuotas" className="gap-2">
-            Cuotas Pendientes
-            {filteredCuotas.length > 0 && (
-              <Badge variant="secondary" className="h-5 px-1.5 text-xs">
-                {filteredCuotas.length}
-              </Badge>
-            )}
-          </TabsTrigger>
-          <TabsTrigger value="historial">Historial de Pagos</TabsTrigger>
-        </TabsList>
+        <div className="sticky top-0 z-10 -mx-4 md:-mx-8 px-4 md:px-8 py-2 mb-2 bg-background border-b">
+          <TabsList>
+            <TabsTrigger value="cuotas" className="gap-2">
+              Cuotas Pendientes
+              {filteredCuotas.length > 0 && (
+                <Badge variant="secondary" className="h-5 px-1.5 text-xs">
+                  {filteredCuotas.length}
+                </Badge>
+              )}
+            </TabsTrigger>
+            <TabsTrigger value="historial">Historial de Pagos</TabsTrigger>
+          </TabsList>
+        </div>
 
         {/* ── Tab: Cuotas pendientes ── */}
         <TabsContent value="cuotas">

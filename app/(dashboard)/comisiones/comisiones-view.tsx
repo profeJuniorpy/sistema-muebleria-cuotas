@@ -276,11 +276,13 @@ export function ComisionesView({
 
       {/* Tabs */}
       <Tabs defaultValue="vendedores">
-        <TabsList>
-          <TabsTrigger value="vendedores">Por Vendedor</TabsTrigger>
-          <TabsTrigger value="detalle">Detalle</TabsTrigger>
-          <TabsTrigger value="configuracion">Configuración</TabsTrigger>
-        </TabsList>
+        <div className="sticky top-0 z-10 -mx-4 md:-mx-8 px-4 md:px-8 py-2 mb-2 bg-background border-b">
+          <TabsList>
+            <TabsTrigger value="vendedores">Por Vendedor</TabsTrigger>
+            <TabsTrigger value="detalle">Detalle</TabsTrigger>
+            <TabsTrigger value="configuracion">Configuración</TabsTrigger>
+          </TabsList>
+        </div>
 
         {/* ── Tab: Por Vendedor ── */}
         <TabsContent value="vendedores">

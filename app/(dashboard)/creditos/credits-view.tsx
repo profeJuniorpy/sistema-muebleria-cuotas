@@ -332,7 +332,7 @@ export function CreditsView({ stats, credits }: CreditsViewProps) {
 
       {/* Tabs + Search */}
       <Tabs defaultValue="todos">
-        <div className="flex flex-col sm:flex-row sm:items-center gap-4 mb-4">
+        <div className="sticky top-0 z-10 -mx-4 md:-mx-8 px-4 md:px-8 py-2 mb-4 bg-background border-b flex flex-col sm:flex-row sm:items-center gap-4">
           <TabsList>
             <TabsTrigger value="todos" className="gap-1.5">
               Todos

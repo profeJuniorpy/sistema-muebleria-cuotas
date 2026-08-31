@@ -285,20 +285,22 @@ export default function ConfigForm({ company, commissions, storefrontCredit, sto
 
   return (
     <Tabs defaultValue="empresa">
-      <TabsList className="mb-6">
-        <TabsTrigger value="empresa" className="gap-2">
-          <Building2 className="h-4 w-4" /> Empresa
-        </TabsTrigger>
-        <TabsTrigger value="comisiones" className="gap-2">
-          <BadgeDollarSign className="h-4 w-4" /> Comisiones
-        </TabsTrigger>
-        <TabsTrigger value="cuotas-tienda" className="gap-2">
-          <Calculator className="h-4 w-4" /> Cuotas (Tienda)
-        </TabsTrigger>
-        <TabsTrigger value="banner-tienda" className="gap-2">
-          <ImageIcon className="h-4 w-4" /> Banner (Tienda)
-        </TabsTrigger>
-      </TabsList>
+      <div className="sticky top-0 z-10 -mx-4 md:-mx-8 px-4 md:px-8 py-2 mb-6 bg-background border-b">
+        <TabsList>
+          <TabsTrigger value="empresa" className="gap-2">
+            <Building2 className="h-4 w-4" /> Empresa
+          </TabsTrigger>
+          <TabsTrigger value="comisiones" className="gap-2">
+            <BadgeDollarSign className="h-4 w-4" /> Comisiones
+          </TabsTrigger>
+          <TabsTrigger value="cuotas-tienda" className="gap-2">
+            <Calculator className="h-4 w-4" /> Cuotas (Tienda)
+          </TabsTrigger>
+          <TabsTrigger value="banner-tienda" className="gap-2">
+            <ImageIcon className="h-4 w-4" /> Banner (Tienda)
+          </TabsTrigger>
+        </TabsList>
+      </div>
 
       {/* ── Tab: Empresa ── */}
       <TabsContent value="empresa">

@@ -355,23 +355,25 @@ export function ReportesView({
 
       {/* Tabs */}
       <Tabs defaultValue="ventas">
-        <TabsList className="mb-2">
-          <TabsTrigger value="ganancias" className="gap-1.5">
-            <DollarSign className="h-3.5 w-3.5" /> Ganancias
-          </TabsTrigger>
-          <TabsTrigger value="ventas" className="gap-1.5">
-            <ShoppingCart className="h-3.5 w-3.5" /> Ventas
-          </TabsTrigger>
-          <TabsTrigger value="cobranzas" className="gap-1.5">
-            <BadgeDollarSign className="h-3.5 w-3.5" /> Cobranzas
-          </TabsTrigger>
-          <TabsTrigger value="morosidad" className="gap-1.5">
-            <AlertTriangle className="h-3.5 w-3.5" /> Morosidad
-          </TabsTrigger>
-          <TabsTrigger value="inventario" className="gap-1.5">
-            <Boxes className="h-3.5 w-3.5" /> Inventario
-          </TabsTrigger>
-        </TabsList>
+        <div className="sticky top-0 z-10 -mx-4 md:-mx-8 px-4 md:px-8 py-2 mb-2 bg-background border-b">
+          <TabsList>
+            <TabsTrigger value="ganancias" className="gap-1.5">
+              <DollarSign className="h-3.5 w-3.5" /> Ganancias
+            </TabsTrigger>
+            <TabsTrigger value="ventas" className="gap-1.5">
+              <ShoppingCart className="h-3.5 w-3.5" /> Ventas
+            </TabsTrigger>
+            <TabsTrigger value="cobranzas" className="gap-1.5">
+              <BadgeDollarSign className="h-3.5 w-3.5" /> Cobranzas
+            </TabsTrigger>
+            <TabsTrigger value="morosidad" className="gap-1.5">
+              <AlertTriangle className="h-3.5 w-3.5" /> Morosidad
+            </TabsTrigger>
+            <TabsTrigger value="inventario" className="gap-1.5">
+              <Boxes className="h-3.5 w-3.5" /> Inventario
+            </TabsTrigger>
+          </TabsList>
+        </div>
 
         {/* ═══ TAB: GANANCIAS ════════════════════════════════════════════════ */}
         <TabsContent value="ganancias" className="space-y-6">
